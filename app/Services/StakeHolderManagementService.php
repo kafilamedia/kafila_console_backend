@@ -5,11 +5,13 @@ use App\Dto\Filter;
 use App\Dto\WebRequest;
 use App\Dto\WebResponse;
 use App\Models\Departement;
+use App\Models\MeetingNote;
 use App\Models\User;
 use App\Utils\ObjectUtil;
 use App\Utils\QueryUtil;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
@@ -39,6 +41,9 @@ class StakeHolderManagementService
             case 'user':
                 $list = $this->getUserList($request);
                 break;
+            case 'meeting_note':
+                $list = $this->getMeetingNoteList($request);
+                break;
             default:
                 throw new Exception("Invalid code");
                 break;
@@ -66,6 +71,13 @@ class StakeHolderManagementService
                     $list = [$response->user];
                 }
                 break;
+            case 'meeting_note':
+                $result = $this->getMeetingNoteList($request, $id);
+                if (sizeof($result) > 0) {
+                    $response->user = $result[0];
+                    $list = [$response->user];
+                }
+                break;
             default:
                 throw new Exception("Invalid code");
                 break;
@@ -73,7 +85,7 @@ class StakeHolderManagementService
         $response->result_list = $list;
         return $response;
     }
-    public function store(WebRequest $request) : WebResponse
+    public function store(WebRequest $request, Request $httpRequest) : WebResponse
     {
         $response = new WebResponse();
          
@@ -84,6 +96,9 @@ class StakeHolderManagementService
             case 'user':
                 $response->user = $this->storeUser($request->user);
                 break;
+            case 'meeting_note':
+                $response->meeting_note = $this->storeMeetingNote($request->meeting_note, $httpRequest->user());
+                break;
             default:
                 throw new Exception("Invalid code");
                 break;
@@ -92,6 +107,33 @@ class StakeHolderManagementService
         return $response;
     }
     ////////////////////////////////////// CRUD //////////////////////////////
+
+    public function storeMeetingNote(MeetingNote $requesModel, User $user) : MeetingNote
+    {
+        $model = new MeetingNote();
+        $existing = null;
+        if (!is_null($requesModel->id)) {
+            $existing = MeetingNote::find($requesModel->id);
+            if (!is_null($existing)) {
+                $model = $existing;
+            } else {
+                throw new Exception("existing data Not Found");
+            }
+        }
+        if (is_null($existing)) {
+            $model->user_id = $user->id;
+            $model->date = $requesModel->date;
+            $model->place = $requesModel->place;
+            $model->deadline_date = $requesModel->deadline_date;
+            $model->departement_id = $user->departement_id;
+            $model->person_in_charge = $requesModel->person_in_charge;
+        }
+        $model->content = $requesModel->content;
+        $model->decision = $requesModel->decision;
+
+        $model->save();
+        return $model;
+    }
 
     public function storeDepartement(Departement $requesModel) : Departement
     {
@@ -147,6 +189,31 @@ class StakeHolderManagementService
         
         $list = $query->get();
         return QueryUtil::rowMappedList($list, new User());
+    }
+
+    public function getMeetingNoteList(WebRequest $request, $id = null) : array
+    {
+         
+        $query =  DB::table('meeting_notes')
+        ->leftJoin('departements', 'departements.id', '=', 'meeting_notes.departement_id')
+        ->leftJoin('users', 'users.id', '=', 'meeting_notes.user_id');
+        
+        $departement_select_fields = QueryUtil::setFillableSelect(new Departement(), true, 'departement');
+        $user_select_fields = QueryUtil::setFillableSelect(new User(), true, 'user');
+        $meeting_note_select_fields = QueryUtil::setFillableSelect(new MeetingNote());
+        $select_array = array_merge($user_select_fields, $departement_select_fields, $meeting_note_select_fields);
+        
+        $query->select('meeting_notes.id as id', ... $select_array);
+
+        if (is_null($id)) {
+            $filter = ObjectUtil::adjustFieldFilter(new MeetingNote(), $request->filter);
+            QueryUtil::setFilterLimitOffsetOrder($query, $filter);
+        } else {
+            $query->where('meeting_notes.id', $id);
+        }
+        
+        $list = $query->get();
+        return QueryUtil::rowMappedList($list, new MeetingNote());
     }
 
     public function getDepartementList(WebRequest $request, $id = null) : array

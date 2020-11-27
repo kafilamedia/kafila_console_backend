@@ -22,6 +22,7 @@ class MeetingNote extends Model
     protected $deadline_date;
     protected int $user_id;
     protected int $departement_id;
+    protected string $person_in_charge;
 
     protected User $user;
     protected Departement $departement;

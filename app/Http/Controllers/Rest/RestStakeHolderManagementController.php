@@ -31,7 +31,7 @@ class RestStakeHolderManagementController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            $response = $this->stakeHolderManagementService->store($payload);
+            $response = $this->stakeHolderManagementService->store($payload, $request);
 
             return parent::jsonResponse($response);
         } catch (Throwable $th) {
