@@ -57,6 +57,8 @@ class StakeHolderManagementService
             $existing = Departement::find($requesModel->id);
             if (!is_null($existing)) {
                 $model = $existing;
+            } else {
+                throw new Exception("Department Not Found");
             }
         }
 

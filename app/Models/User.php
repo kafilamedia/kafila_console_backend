@@ -59,4 +59,16 @@ class User extends Authenticatable
         return ($this->attributes["password"]);
     }
  
+    public function hasRole($roles)
+    {
+        // dd($role, $this->attributes['role']);
+        foreach ($roles as $role) {
+            if ($this->attributes['role'] == $role) {
+                return true;
+            }
+        }
+        return false;
+        // return in_array($role, [$this->attributes['role']]);
+        // return in_array($role, $this->roles);
+    }
 }
