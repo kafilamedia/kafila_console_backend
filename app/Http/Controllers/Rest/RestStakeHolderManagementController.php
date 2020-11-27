@@ -40,6 +40,13 @@ class RestStakeHolderManagementController extends BaseRestController
     }
     public function view(Request $request, int $id)
     {
+        try {
+            $payload = parent::getWebRequest($request);
+            $response = $this->stakeHolderManagementService->view($payload, $id);
 
+            return parent::jsonResponse($response);
+        } catch (Throwable $th) {
+            return parent::errorResponse($th);
+        }
     }
 }

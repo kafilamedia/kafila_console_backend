@@ -1,10 +1,23 @@
 <?php
 namespace App\Services;
 
+use App\Dto\Filter;
 use App\Dto\WebRequest;
 use App\Dto\WebResponse;
 use App\Models\Departement;
+use App\Models\User;
+use App\Utils\ObjectUtil;
+use App\Utils\QueryUtil;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
+use ReflectionClass;
+use ReflectionProperty;
+use Throwable;
+
+define('DEFAULT_LIMIT', 10);
 
 class StakeHolderManagementService
 {
@@ -21,9 +34,38 @@ class StakeHolderManagementService
         $list = [];
         switch ($request->code) {
             case 'departement':
-                $list = $this->getDepartementList();
+                $list = $this->getDepartementList($request);
                 break;
-            
+            case 'user':
+                $list = $this->getUserList($request);
+                break;
+            default:
+                throw new Exception("Invalid code");
+                break;
+        }
+        $response->result_list = $list;
+        $response->filter = $request->filter;
+        return $response;
+    }
+    public function view(WebRequest $request, $id) : WebResponse
+    {
+        $response = new WebResponse();
+        $list = [];
+        switch ($request->code) {
+            case 'departement':
+                $result = $this->getDepartementList($request, $id);
+                if (sizeof($result) > 0) {
+                    $response->departement = $result[0];
+                    $list = [$response->departement];
+                }
+                break;
+            case 'user':
+                $result = $this->getUserList($request, $id);
+                if (sizeof($result) > 0) {
+                    $response->user = $result[0];
+                    $list = [$response->user];
+                }
+                break;
             default:
                 throw new Exception("Invalid code");
                 break;
@@ -39,14 +81,16 @@ class StakeHolderManagementService
             case 'departement':
                 $response->departement = $this->storeDepartement($request->departement);
                 break;
-            
+            case 'user':
+                $response->user = $this->storeUser($request->user);
+                break;
             default:
                 throw new Exception("Invalid code");
                 break;
         }
         
         return $response;
-    } 
+    }
     ////////////////////////////////////// CRUD //////////////////////////////
 
     public function storeDepartement(Departement $requesModel) : Departement
@@ -58,7 +102,7 @@ class StakeHolderManagementService
             if (!is_null($existing)) {
                 $model = $existing;
             } else {
-                throw new Exception("Department Not Found");
+                throw new Exception("existing data Not Found");
             }
         }
 
@@ -67,9 +111,61 @@ class StakeHolderManagementService
         $model->save();
         return $model;
     }
-    public function getDepartementList() : array
+
+    public function storeUser(User $requesModel) : User
     {
-        $depatements = Departement::all();
-        return $depatements->toArray();
+        if (!is_null($requesModel->id)) {
+            $existing = User::find($requesModel->id);
+            if (is_null($existing)) {
+                throw new Exception("existing data Not Found");
+            }
+        }
+
+        $saved = $this->accountService->saveUser($requesModel, is_null($requesModel->id));
+        return $saved;
+    }
+
+    public function getUserList(WebRequest $request, $id = null) : array
+    {
+         
+        $query =  DB::table('users')
+        ->leftJoin('departements', 'departements.id', '=', 'users.departement_id');
+        
+        $departement_select_fields = QueryUtil::setFillableSelect(new Departement(), true, 'departement');
+        $user_select_fields = QueryUtil::setFillableSelect(new User());
+        $select_array = array_merge($user_select_fields, $departement_select_fields);
+        
+        $query->select('users.id as id', ... $select_array);
+        $query->where('role', '!=', 'admin');
+
+        if (is_null($id)) {
+            $filter = ObjectUtil::adjustFieldFilter(new User(), $request->filter);
+            QueryUtil::setFilterLimitOffsetOrder($query, $filter);
+        } else {
+            $query->where('users.id', $id);
+        }
+        
+        $list = $query->get();
+        return QueryUtil::rowMappedList($list, new User());
+    }
+
+    public function getDepartementList(WebRequest $request, $id = null) : array
+    {
+        $query =  DB::table('departements');
+        
+        $departement_select_fields = QueryUtil::setFillableSelect(new Departement());
+        
+        $query->select('departements.id as id', ... $departement_select_fields);
+
+        $filter = ObjectUtil::adjustFieldFilter(new Departement(), $request->filter);
+        QueryUtil::setFilterLimitOffsetOrder($query, $filter);
+        if (is_null($id)) {
+            $filter = ObjectUtil::adjustFieldFilter(new User(), $request->filter);
+            QueryUtil::setFilterLimitOffsetOrder($query, $filter);
+        } else {
+            $query->where('id', $id);
+        }
+        $list = $query->get();
+        return QueryUtil::rowMappedList($list, new Departement());
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -10,24 +11,27 @@ use ReflectionProperty;
 
 class ObjectUtil
 {
-    public static function objecttoarray($obj) : array
+    public static function adjustFieldFilter(Model $model, $filter = null)
     {
-        $reflectionClass = new ReflectionClass($obj);
-        $arr = [];
-        $props = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
+        if (is_null($filter)) {
+            return null;
+        }
+        $fieldsFilter = $filter->fieldsFilter;
 
-        foreach ($obj as $key => $value) {
-            if ($reflectionClass->hasProperty($key) && !is_null($value)) {
-                $prop = $reflectionClass->getProperty($key);
-                $propType = ObjectUtil::getPropName($prop);
-                if (Str::contains($propType, 'App\\Models')) {
-                    $arr[$key] =  ObjectUtil::objecttoarray($value);
-                } else {
-                    $arr[$key] = $value;
+        foreach ($fieldsFilter as $key => $value) {
+            $exist = false;
+            foreach ($model->getFillable() as $fillablekey) {
+                if ($key == $fillablekey) {
+                    $exist = true;
+                    break;
                 }
             }
+            if (!$exist) {
+                unset($filter->fieldsFilter[$key]);
+            }
         }
-        return $arr;
+
+        return $filter;
     }
     public static function arraytoobj($obj, $arr)
     {

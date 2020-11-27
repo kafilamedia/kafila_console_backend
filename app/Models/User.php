@@ -71,4 +71,28 @@ class User extends Authenticatable
         // return in_array($role, [$this->attributes['role']]);
         // return in_array($role, $this->roles);
     }
+
+    public static function adjustFieldFilter($filter)
+    {
+        if (is_null($filter)) {
+            return null;
+        }
+        $user = new User();
+        $fieldsFilter = $filter->fieldsFilter;
+
+        foreach ($fieldsFilter as $key => $value) {
+            $exist = false;
+            foreach ($user->fillable as $fillablekey) {
+                if ($key == $fillablekey) {
+                    $exist = true;
+                    break;
+                }
+            }
+            if (!$exist) {
+                unset($filter->fieldsFilter[$key]);
+            }
+        }
+
+        return $filter;
+    }
 }

@@ -16,7 +16,21 @@ class AccountService
     public function register(WebRequest $request) : WebResponse
     {
         $requestModel = $request->user;
+        $savedUser = $this->saveUser($requestModel);
+        $response = new WebResponse();
+        $response->user = $savedUser;
+        return $response;
+    }
+
+    public function saveUser(User $requestModel, bool $new = true) : User
+    {
         $user = new User();
+        if (!$new) {
+            $user = User::find($requestModel->id);
+            if (is_null($user)) {
+                throw new Exception("Existing data not found");
+            }
+        }
         $user->email = $requestModel->email;
         $user->name =($requestModel->name);
         $user->display_name = ($requestModel->display_name);
@@ -24,10 +38,7 @@ class AccountService
         $user->departement_id = ($requestModel->departement_id);
         $user->role = ('user');
         $user->save();
-
-        $response = new WebResponse();
-        $response->user = $user;
-        return $response;
+        return $user;
     }
 
     public function loginAttemp(WebRequest $request) : WebResponse

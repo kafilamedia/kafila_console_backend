@@ -19,7 +19,7 @@ class WebResponse
     public Departement $departement;
     public array $result_list;
 
-    public array $filter = [];
+    public ?Filter $filter = null;
 
     public function __construct()
     {

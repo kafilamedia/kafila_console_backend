@@ -14,6 +14,6 @@ class WebRequest
     public Departement $departement;
 
     public ?string $code = null;
-    public array $filter = [];
+    public ?Filter $filter = null;
     
 }
