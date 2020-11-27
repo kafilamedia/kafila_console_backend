@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
+
+class User extends Authenticatable
+{
+    use Notifiable;
+    
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name','email','password','display_name','role','departement_id',
+    ];
+
+    protected int $id;
+    protected $email;
+    protected $name;
+    protected $password ;
+    protected $display_name;
+    protected $role;
+    protected int $departement_id;
+    protected Departement $departement ;
+    
+    
+    public function department()
+    {
+        return $this->hasOne(Departement::class, 'departement_id');
+    }
+
+    public function save($options = []) : bool
+    {
+        if (is_null($this->role)) {
+            $this->role = ('user');
+        }
+        return parent::save($options);
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'email';
+    }
+
+    public function getAuthIdentifier()
+    {
+        
+        return $this->attributes["email"];
+    }
+
+    public function getAuthPassword()
+    {
+        return ($this->attributes["password"]);
+    }
+ 
+}
