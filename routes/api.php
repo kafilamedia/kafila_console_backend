@@ -19,11 +19,16 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
  
 //AUTO api prefixed
-Route::prefix('account')->group(function () { 
+Route::prefix('account')->group(function () {
     Route::post('login', 'Rest\RestAccountController@login');
     Route::post('register', 'Rest\RestAccountController@register');
-});
 
+    Route::post('requestid', 'Rest\RestAccountController@requestId')->name('requestid');
+    Route::get('requestid', 'Rest\RestAccountController@requestId')->name('requestid');
+});
+Route:: group(['prefix' => 'accountdashboard' , 'middleware'=>'auth:api'  ], function () {
+    Route::post('user', 'Rest\RestAccountDashboardController@getUser');
+});
 Route:: group(['prefix' => 'notes' , 'middleware'=>'auth:api'  ], function () {
     Route::post('list', 'Rest\RestMeetingNotesController@list');
     Route::post('store', 'Rest\RestMeetingNotesController@store');

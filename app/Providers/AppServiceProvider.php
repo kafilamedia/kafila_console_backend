@@ -19,15 +19,17 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         $accountService = new AccountService();
-       
+        $stakeHolderManagementService = new StakeHolderManagementService($accountService);
+        $meetingNoteService = new MeetingNoteService($stakeHolderManagementService);
+
         $this->app->bind(AccountService::class, function ($app) use ($accountService) {
             return $accountService;
         });
-        $this->app->bind(MeetingNoteService::class, function ($app) {
-            return new MeetingNoteService();
+        $this->app->bind(StakeHolderManagementService::class, function ($app) use ($stakeHolderManagementService) {
+            return $stakeHolderManagementService;
         });
-        $this->app->bind(StakeHolderManagementService::class, function ($app) use ($accountService) {
-            return new StakeHolderManagementService($accountService);
+        $this->app->bind(MeetingNoteService::class, function ($app) use ($meetingNoteService) {
+            return $meetingNoteService;
         });
     }
 
