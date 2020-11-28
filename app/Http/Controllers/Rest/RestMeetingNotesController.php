@@ -18,6 +18,7 @@ class RestMeetingNotesController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
+            $payload->user = $request->user();
             $response = $this->meetingNoteService->list($payload, $request->user());
             return parent::jsonResponse($response);
         } catch (\Throwable $th) {

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Rest;
 
-use App\Http\Controllers\Controller;
 use App\Services\StakeHolderManagementService;
 use Illuminate\Http\Request;
 use Throwable;
@@ -20,6 +19,7 @@ class RestStakeHolderManagementController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
+            $payload->user = $request->user();
             $response = $this->stakeHolderManagementService->list($payload);
 
             return parent::jsonResponse($response);
@@ -31,6 +31,7 @@ class RestStakeHolderManagementController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
+            $payload->user = $request->user();
             $response = $this->stakeHolderManagementService->store($payload, $request);
 
             return parent::jsonResponse($response);
@@ -42,6 +43,7 @@ class RestStakeHolderManagementController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
+            $payload->user = $request->user();
             $response = $this->stakeHolderManagementService->view($payload, $id);
 
             return parent::jsonResponse($response);

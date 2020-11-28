@@ -27,12 +27,7 @@ class MeetingNoteService
     public function list(WebRequest $webRequest, User $user) : WebResponse
     {
         $filter = is_null($webRequest->filter)? new Filter(): $webRequest->filter;
-
-        if (!$user->hasRole('admin')) {
-            $filter->fieldsFilter['departements.id'] = $user->departement_id;
-        }
-       
-        $result = $this->stakeHolderManagementService->getMeetingNoteList($filter);
+        $result = $this->stakeHolderManagementService->getMeetingNoteList($filter, $user);
         $response = new WebResponse();
         $response->result_list = $result['list'];
         $response->count = $result['count'];
@@ -42,11 +37,7 @@ class MeetingNoteService
     public function view($id, User $user) : WebResponse
     {
         $filter = new Filter();
-        if (!$user->hasRole('admin')) {
-            $filter->fieldsFilter['departements.id'] = $user->departement_id;
-        }
-       
-        $result = $this->stakeHolderManagementService->getMeetingNoteList($filter, $id);
+        $result = $this->stakeHolderManagementService->getMeetingNoteList($filter, $user, $id);
         $response = new WebResponse();
         $response->meeting_note = $result['list'][0];
         return $response;

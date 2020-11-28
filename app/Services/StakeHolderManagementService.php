@@ -42,7 +42,7 @@ class StakeHolderManagementService
                 $list = $this->getUserList($request);
                 break;
             case 'meeting_note':
-                $list = $this->getMeetingNoteList($request->filter);
+                $list = $this->getMeetingNoteList($request->filter, $request->user);
                 break;
             default:
                 throw new Exception("Invalid code");
@@ -86,7 +86,7 @@ class StakeHolderManagementService
                 }
                 break;
             case 'meeting_note':
-                $result = $this->getMeetingNoteList($request->filter, $id)['list'];
+                $result = $this->getMeetingNoteList($request->filter, $request->user, $id)['list'];
                 if (sizeof($result) > 0) {
                     $response->user = $result[0];
                     $list = [$response->user];
@@ -213,7 +213,7 @@ class StakeHolderManagementService
         ];
     }
 
-    public function getMeetingNoteList(Filter $filter, $id = null) : array
+    public function getMeetingNoteList(Filter $filter, User $user, $id = null) : array
     {
          
         $query =  DB::table('meeting_notes')
@@ -226,17 +226,26 @@ class StakeHolderManagementService
         $select_array = array_merge($user_select_fields, $departement_select_fields, $meeting_note_select_fields);
         
         $query->select('meeting_notes.id as id', ... $select_array);
+        if (!$user->hasRole('admin')) {
+            $query->where('departements.id', $user->departement_id);
+        }
+        
         $count = 0;
         if (is_null($id)) {
             $filter = ObjectUtil::adjustFieldFilter(new MeetingNote(), $filter);
             QueryUtil::setFilter($query, $filter);
             $countQuery = clone $query;
             $count = $countQuery->count('meeting_notes.id');
-
+            if ($filter->orderBy == "departement") {
+                $filter->orderBy = "departements.name";
+            }
             QueryUtil::setLimitOffsetOrder($query, $filter);
         } else {
+            
             $query->where('meeting_notes.id', $id);
         }
+
+        
         
         $list = $query->get();
         return [
