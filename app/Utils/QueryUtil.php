@@ -61,6 +61,10 @@ class QueryUtil
         return $obj;
     }
 
+    /**
+     * generate select queries INLY, not query criteria
+     * @return array select_fields
+     */
     public static function setFillableSelect(BaseModel $joinObjectRaw, bool $as_join = false, string $join_alias = null) : array
     {
         $select_fields = [];

@@ -12,6 +12,9 @@ use ReflectionProperty;
 
 class ObjectUtil
 {
+    /**
+     * generate query criteria by provided filter
+     */
     public static function adjustFieldFilter(BaseModel $model, $filter = null)
     {
         if (is_null($filter)) {
@@ -39,6 +42,7 @@ class ObjectUtil
                 unset($filter->fieldsFilter[$key]);
             } else {
                 unset($filter->fieldsFilter[$key]);
+                //if has select alias
                 if (!is_null($model->getAlias($key))) {
                     $filter->fieldsFilter[$model->getAlias($key)] = $value;
                 } else {
