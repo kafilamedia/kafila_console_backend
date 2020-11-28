@@ -135,6 +135,7 @@ class StakeHolderManagementService
             }
         }
         if (is_null($existing)) {
+            //if new record, enable to fills these values
             $model->user_id = $user->id;
             $model->date = $requesModel->date;
             $model->place = $requesModel->place;
@@ -142,6 +143,7 @@ class StakeHolderManagementService
             $model->departement_id = $user->departement_id;
             $model->person_in_charge = $requesModel->person_in_charge;
         }
+        //
         $model->content = $requesModel->content;
         $model->decision = $requesModel->decision;
 

@@ -35,7 +35,7 @@ class RestMeetingNotesController extends BaseRestController
             return parent::errorResponse($th);
         }
     }
-    public function view(Request $request, int $id)
+    public function view(Request $request, $id)
     {
         try {
             $response = $this->meetingNoteService->view($id, $request->user());

@@ -34,7 +34,7 @@ Route:: group(['prefix' => 'accountdashboard' , 'middleware'=>'auth:api'  ], fun
 Route:: group(['prefix' => 'notes' , 'middleware'=>'auth:api'  ], function () {
     Route::post('list', 'Rest\RestMeetingNotesController@list');
     Route::post('store', 'Rest\RestMeetingNotesController@store');
-    Route::post('view/{id}', 'Rest\RestMeetingNotesController@show');
+    Route::post('view/{id}', 'Rest\RestMeetingNotesController@view');
     // Route::post('delete', 'Rest\RestMeetingNotesController@destroy');
 });
 
