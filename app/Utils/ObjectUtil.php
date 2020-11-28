@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -11,23 +12,34 @@ use ReflectionProperty;
 
 class ObjectUtil
 {
-    public static function adjustFieldFilter(Model $model, $filter = null)
+    public static function adjustFieldFilter(BaseModel $model, $filter = null)
     {
         if (is_null($filter)) {
             return null;
         }
         $fieldsFilter = $filter->fieldsFilter;
+        $fillable = $model->getFillable();
+        $filterable = $model->getFilterable();
 
         foreach ($fieldsFilter as $key => $value) {
             $exist = false;
-            foreach ($model->getFillable() as $fillablekey) {
-                if ($key == $fillablekey) {
+            foreach ($filterable as $fillablekey) {
+                if (!$exist && $key == $fillablekey) {
                     $exist = true;
                     break;
                 }
             }
-            if (!$exist) {
+            foreach ($fillable as $fillablekey) {
+                if (!$exist && $key == $fillablekey) {
+                    $exist = true;
+                    break;
+                }
+            }
+            if ($exist == false) {
                 unset($filter->fieldsFilter[$key]);
+            } else {
+                unset($filter->fieldsFilter[$key]);
+                $filter->fieldsFilter[$model->getTable().'.'.$key] = $value;
             }
         }
 

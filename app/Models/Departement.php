@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Departement extends Model
+class Departement extends BaseModel
 {
     //
     protected $fillable = [
@@ -14,4 +12,6 @@ class Departement extends Model
     protected int $id;
     protected $name;
     protected $description;
+    
+    
 }

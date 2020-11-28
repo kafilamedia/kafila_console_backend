@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class MeetingNote extends Model
+class MeetingNote extends BaseModel
 {
     //
     protected $fillable = [
@@ -26,6 +24,12 @@ class MeetingNote extends Model
 
     protected User $user;
     protected Departement $departement;
+
+    public function __construct()
+    {
+        parent::addFilterable('id');
+        parent::addFilterableAlias('id');
+    }
 
     public function user()
     {

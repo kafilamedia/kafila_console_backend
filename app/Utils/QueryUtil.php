@@ -3,6 +3,7 @@
 namespace App\Utils;
 
 use App\Dto\Filter;
+use App\Models\BaseModel;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -25,7 +26,7 @@ class QueryUtil
         
         return $mappedList;
     }
-    public static function rowMapped(Model $obj, object $rowDataRaw)
+    public static function rowMapped(BaseModel $obj, object $rowDataRaw)
     {
         $reflectionClass = new ReflectionClass($obj);
         $rowData = get_object_vars($rowDataRaw);
@@ -60,13 +61,17 @@ class QueryUtil
         return $obj;
     }
 
-    public static function setFillableSelect(Model $joinObjectRaw, bool $as_join = false, string $join_alias = null) : array
+    public static function setFillableSelect(BaseModel $joinObjectRaw, bool $as_join = false, string $join_alias = null) : array
     {
         $select_fields = [];
         $joinObject = clone $joinObjectRaw;
         $table_name = $joinObject->getTable();
         $fillable = $joinObject->getFillable();
-        foreach ($fillable as $key) {
+        $filterable = $joinObject->getFilterable();
+
+        $selects = array_merge($fillable, $filterable);
+
+        foreach ($selects as $key) {
             if (false == ($as_join)) {
                 array_push($select_fields, $table_name.'.'.$key.' as '.$key);
             } else {

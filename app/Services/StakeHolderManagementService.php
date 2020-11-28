@@ -50,9 +50,22 @@ class StakeHolderManagementService
         }
         $response->count = $list['count'];
         $response->result_list = $list['list'];
-        $response->filter = $request->filter;
+        $response->filter = $this->adjustFilterKey($request->filter);
         return $response;
     }
+
+    public static function adjustFilterKey(Filter $filter) : Filter
+    {
+        foreach ($filter->fieldsFilter as $key => $value) {
+            if (Str::contains($key, '.')) {
+                unset($filter->fieldsFilter[$key]);
+                $adjustedKey = explode('.', $key)[1];
+                $filter->fieldsFilter[$adjustedKey] = $value;
+            }
+        }
+        return $filter;
+    }
+
     public function view(WebRequest $request, $id) : WebResponse
     {
         $response = new WebResponse();
@@ -185,9 +198,10 @@ class StakeHolderManagementService
         $count = 0;
         if (is_null($id)) {
             $filter = ObjectUtil::adjustFieldFilter(new User(), $request->filter);
+            QueryUtil::setFilter($query, $filter);
             $countQuery = clone $query;
             $count = $countQuery->count('users.id');
-            QueryUtil::setFilterLimitOffsetOrder($query, $filter);
+            QueryUtil::setLimitOffsetOrder($query, $filter);
         } else {
             $query->where('users.id', $id);
         }
@@ -215,10 +229,11 @@ class StakeHolderManagementService
         $count = 0;
         if (is_null($id)) {
             $filter = ObjectUtil::adjustFieldFilter(new MeetingNote(), $filter);
+            QueryUtil::setFilter($query, $filter);
             $countQuery = clone $query;
             $count = $countQuery->count('meeting_notes.id');
-            
-            QueryUtil::setFilterLimitOffsetOrder($query, $filter);
+
+            QueryUtil::setLimitOffsetOrder($query, $filter);
         } else {
             $query->where('meeting_notes.id', $id);
         }
@@ -241,10 +256,11 @@ class StakeHolderManagementService
         $count = 0;
         if (is_null($id)) {
             $filter = ObjectUtil::adjustFieldFilter(new Departement(), $request->filter);
+            QueryUtil::setFilter($query, $filter);
             $countQuery = clone $query;
             $count = $countQuery->count('departements.id');
 
-            QueryUtil::setFilterLimitOffsetOrder($query, $filter);
+            QueryUtil::setLimitOffsetOrder($query, $filter);
         } else {
             $query->where('id', $id);
         }

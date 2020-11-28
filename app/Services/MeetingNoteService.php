@@ -36,6 +36,7 @@ class MeetingNoteService
         $response = new WebResponse();
         $response->result_list = $result['list'];
         $response->count = $result['count'];
+        $response->filter = StakeHolderManagementService::adjustFilterKey($filter);
         return $response;
     }
     public function view($id, User $user) : WebResponse
