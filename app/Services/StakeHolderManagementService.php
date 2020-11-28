@@ -215,7 +215,7 @@ class StakeHolderManagementService
 
     public function getMeetingNoteList(Filter $filter, User $user, $id = null) : array
     {
-         
+        
         $query =  DB::table('meeting_notes')
         ->leftJoin('departements', 'departements.id', '=', 'meeting_notes.departement_id')
         ->leftJoin('users', 'users.id', '=', 'meeting_notes.user_id');
@@ -232,6 +232,9 @@ class StakeHolderManagementService
         
         $count = 0;
         if (is_null($id)) {
+            // if (isset($filter->fieldsFilter['departement'])) {
+            //     $query->where('departements.name', 'like', '%'.$filter->fieldsFilter['departement'].'%');
+            // }
             $filter = ObjectUtil::adjustFieldFilter(new MeetingNote(), $filter);
             QueryUtil::setFilter($query, $filter);
             $countQuery = clone $query;

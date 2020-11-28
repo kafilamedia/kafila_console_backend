@@ -39,7 +39,11 @@ class ObjectUtil
                 unset($filter->fieldsFilter[$key]);
             } else {
                 unset($filter->fieldsFilter[$key]);
-                $filter->fieldsFilter[$model->getTable().'.'.$key] = $value;
+                if (!is_null($model->getAlias($key))) {
+                    $filter->fieldsFilter[$model->getAlias($key)] = $value;
+                } else {
+                    $filter->fieldsFilter[$model->getTable().'.'.$key] = $value;
+                }
             }
         }
 

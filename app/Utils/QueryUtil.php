@@ -73,7 +73,10 @@ class QueryUtil
 
         foreach ($selects as $key) {
             if (false == ($as_join)) {
-                array_push($select_fields, $table_name.'.'.$key.' as '.$key);
+                $has_alias_for_filter_only = $joinObjectRaw->getAlias($key) != null;
+                if (!$has_alias_for_filter_only) {
+                    array_push($select_fields, $table_name.'.'.$key.' as '.$key);
+                }
             } else {
                 if (is_null($join_alias)) {
                     $join_alias = $table_name;

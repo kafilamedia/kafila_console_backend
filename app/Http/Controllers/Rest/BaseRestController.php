@@ -53,6 +53,7 @@ class BaseRestController extends Controller {
 
     protected function errorResponse(Throwable $th)
     {
+        // throw $th;
         $response = new WebResponse();
         $response->message = $th->getMessage();
         $response->code = "-1";

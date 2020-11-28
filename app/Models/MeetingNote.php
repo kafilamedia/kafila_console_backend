@@ -27,8 +27,8 @@ class MeetingNote extends BaseModel
 
     public function __construct()
     {
-        parent::addFilterable('id');
-        parent::addFilterableAlias('id');
+        parent::addFilterable('id', 'departement');
+        parent::addFilterableAlias('departement', 'departements.name');
     }
 
     public function user()

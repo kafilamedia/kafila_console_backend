@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BaseModel extends Model
 {
     protected array $filterable = [];
+    //only for filter or order, not for select components
     protected array $filterable_aliases = [];
 
     protected function addFilterable(...$keys)
@@ -16,10 +17,9 @@ class BaseModel extends Model
         }
         
     }
-    protected function addFilterableAlias($filterable_key)
+    protected function addFilterableAlias($filterable_key, $alias)
     {
-        $this->filterable_aliases[$filterable_key] = parent::getTable().'.'.$filterable_key;
-        
+        $this->filterable_aliases[$filterable_key] = $alias;
     }
 
     /**
@@ -28,5 +28,20 @@ class BaseModel extends Model
     public function getFilterable()
     {
         return $this->filterable;
+    }
+
+    /**
+     * Get the value of filterable_aliases
+     */ 
+    public function getFilterable_aliases()
+    {
+        return $this->filterable_aliases;
+    }
+    public function getAlias($key)
+    {
+        if (isset($this->filterable_aliases[$key])) {
+            return $this->filterable_aliases[$key];
+        }
+        return null;
     }
 }
