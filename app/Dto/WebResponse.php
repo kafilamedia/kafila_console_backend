@@ -18,6 +18,7 @@ class WebResponse
     public MeetingNote $meeting_note;
     public Departement $departement;
     public array $result_list;
+    public int $count = 0;
 
     public ?Filter $filter = null;
 

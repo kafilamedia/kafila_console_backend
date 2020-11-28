@@ -33,7 +33,7 @@ class StakeHolderManagementService
     public function list(WebRequest $request) : WebResponse
     {
         $response = new WebResponse();
-        $list = [];
+        $list = ['count'=>0, 'list'=>[]];
         switch ($request->code) {
             case 'departement':
                 $list = $this->getDepartementList($request);
@@ -48,7 +48,8 @@ class StakeHolderManagementService
                 throw new Exception("Invalid code");
                 break;
         }
-        $response->result_list = $list;
+        $response->count = $list['count'];
+        $response->result_list = $list['list'];
         $response->filter = $request->filter;
         return $response;
     }
@@ -58,21 +59,21 @@ class StakeHolderManagementService
         $list = [];
         switch ($request->code) {
             case 'departement':
-                $result = $this->getDepartementList($request, $id);
+                $result = $this->getDepartementList($request, $id)['list'];
                 if (sizeof($result) > 0) {
                     $response->departement = $result[0];
                     $list = [$response->departement];
                 }
                 break;
             case 'user':
-                $result = $this->getUserList($request, $id);
+                $result = $this->getUserList($request, $id)['list'];
                 if (sizeof($result) > 0) {
                     $response->user = $result[0];
                     $list = [$response->user];
                 }
                 break;
             case 'meeting_note':
-                $result = $this->getMeetingNoteList($request->filter, $id);
+                $result = $this->getMeetingNoteList($request->filter, $id)['list'];
                 if (sizeof($result) > 0) {
                     $response->user = $result[0];
                     $list = [$response->user];
@@ -181,16 +182,21 @@ class StakeHolderManagementService
         // if ($is_admin) {
         //     $query->where('role', '!=', 'admin');
         // }
-
+        $count = 0;
         if (is_null($id)) {
             $filter = ObjectUtil::adjustFieldFilter(new User(), $request->filter);
+            $countQuery = clone $query;
+            $count = $countQuery->count('users.id');
             QueryUtil::setFilterLimitOffsetOrder($query, $filter);
         } else {
             $query->where('users.id', $id);
         }
         
         $list = $query->get();
-        return QueryUtil::rowMappedList($list, new User());
+        return [
+            'list'=>QueryUtil::rowMappedList($list, new User()),
+            'count'=>$count
+        ];
     }
 
     public function getMeetingNoteList(Filter $filter, $id = null) : array
@@ -206,16 +212,22 @@ class StakeHolderManagementService
         $select_array = array_merge($user_select_fields, $departement_select_fields, $meeting_note_select_fields);
         
         $query->select('meeting_notes.id as id', ... $select_array);
-
+        $count = 0;
         if (is_null($id)) {
             $filter = ObjectUtil::adjustFieldFilter(new MeetingNote(), $filter);
+            $countQuery = clone $query;
+            $count = $countQuery->count('meeting_notes.id');
+            
             QueryUtil::setFilterLimitOffsetOrder($query, $filter);
         } else {
             $query->where('meeting_notes.id', $id);
         }
         
         $list = $query->get();
-        return QueryUtil::rowMappedList($list, new MeetingNote());
+        return [
+            'list'=>QueryUtil::rowMappedList($list, new MeetingNote()),
+            'count'=>$count
+        ];
     }
 
     public function getDepartementList(WebRequest $request, $id = null) : array
@@ -226,15 +238,21 @@ class StakeHolderManagementService
         
         $query->select('departements.id as id', ... $departement_select_fields);
 
-        $filter = ObjectUtil::adjustFieldFilter(new Departement(), $request->filter);
-        QueryUtil::setFilterLimitOffsetOrder($query, $filter);
+        $count = 0;
         if (is_null($id)) {
-            $filter = ObjectUtil::adjustFieldFilter(new User(), $request->filter);
+            $filter = ObjectUtil::adjustFieldFilter(new Departement(), $request->filter);
+            $countQuery = clone $query;
+            $count = $countQuery->count('departements.id');
+
             QueryUtil::setFilterLimitOffsetOrder($query, $filter);
         } else {
             $query->where('id', $id);
         }
         $list = $query->get();
-        return QueryUtil::rowMappedList($list, new Departement());
+       
+        return [
+            'list'=>QueryUtil::rowMappedList($list, new Departement()),
+            'count'=>$count
+        ];
     }
 }

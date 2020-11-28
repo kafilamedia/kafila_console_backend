@@ -18,7 +18,8 @@ class RestMeetingNotesController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            return $this->meetingNoteService->list($payload, $request->user());
+            $response = $this->meetingNoteService->list($payload, $request->user());
+            return parent::jsonResponse($response);
         } catch (\Throwable $th) {
             return parent::errorResponse($th);
         }
@@ -27,7 +28,8 @@ class RestMeetingNotesController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            return $this->meetingNoteService->storeMeetingNote($payload, $request->user());
+            $response = $this->meetingNoteService->storeMeetingNote($payload, $request->user());
+            return parent::jsonResponse($response);
         } catch (\Throwable $th) {
             return parent::errorResponse($th);
         }
@@ -35,7 +37,8 @@ class RestMeetingNotesController extends BaseRestController
     public function view(Request $request, int $id)
     {
         try {
-            return $this->meetingNoteService->view($id, $request->user());
+            $response = $this->meetingNoteService->view($id, $request->user());
+            return parent::jsonResponse($response);
         } catch (\Throwable $th) {
             return parent::errorResponse($th);
         }

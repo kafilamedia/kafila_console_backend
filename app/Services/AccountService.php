@@ -22,6 +22,15 @@ class AccountService
         return $response;
     }
 
+    public function logout(User $requestUser) : WebResponse
+    {
+        $user = User::find($requestUser->id);
+        $user->api_token = null;
+        $user->save();
+        $response = new WebResponse();
+        return $response;
+    }
+
     public function saveUser(User $requestModel, bool $new = true) : User
     {
         $user = new User();

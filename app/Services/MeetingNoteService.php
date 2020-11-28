@@ -34,7 +34,8 @@ class MeetingNoteService
        
         $result = $this->stakeHolderManagementService->getMeetingNoteList($filter);
         $response = new WebResponse();
-        $response->meeting_note = $result;
+        $response->result_list = $result['list'];
+        $response->count = $result['count'];
         return $response;
     }
     public function view($id, User $user) : WebResponse
@@ -46,7 +47,7 @@ class MeetingNoteService
        
         $result = $this->stakeHolderManagementService->getMeetingNoteList($filter, $id);
         $response = new WebResponse();
-        $response->meeting_note = $result;
+        $response->meeting_note = $result['list'][0];
         return $response;
     }
 }

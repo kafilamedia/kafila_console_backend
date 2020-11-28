@@ -25,11 +25,12 @@ class RestAccountDashboardController extends BaseRestController
     public function getUser(Request $request) : JsonResponse
     {
         try {
-            $response = new WebResponse();
-            $userList = $this->stakeHolderManagementService->getUserList(new WebRequest(), $request->user()->id);
-            $response->user = ($userList[0]);
             $token = $request->header('Authorization');
             $token = explode(" ", $token)[1];
+            $response = new WebResponse();
+            $userList = $this->stakeHolderManagementService->getUserList(new WebRequest(), $request->user()->id);
+            $response->user = ($userList['list'][0]);
+            $response->user->api_token = $token;
             return parent::jsonResponse($response, ['api_token'=>$token]);
         } catch (Throwable $th) {
             return parent::errorResponse($th);

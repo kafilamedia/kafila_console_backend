@@ -62,6 +62,9 @@ class User extends Authenticatable
     public function hasRole($roles)
     {
         // dd($role, $this->attributes['role']);
+        if (!is_array($roles)) {
+            $roles = [$roles];
+        }
         foreach ($roles as $role) {
             if ($this->attributes['role'] == $role) {
                 return true;

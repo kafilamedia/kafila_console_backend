@@ -42,9 +42,21 @@ class RestAccountController extends BaseRestController
 
             $detailUser = $this->stakeHolderManagementService->getUserList(new WebRequest(), $user->id);
             
-            $response->user = $detailUser[0];
+            $response->user = $detailUser['list'][0];
+            $response->user->api_token = $api_token;
             // $response->user = null;
             return parent::jsonResponse($response, ['api_token'=>$api_token]);
+        } catch (Throwable $th) {
+            return parent::errorResponse($th);
+        }
+    }
+    public function logout(Request $request) : JsonResponse
+    {
+         
+        try {
+            $response = $this->account_service->logout($request->user());
+            // $response->user = null;
+            return parent::jsonResponse($response);
         } catch (Throwable $th) {
             return parent::errorResponse($th);
         }
