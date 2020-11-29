@@ -99,6 +99,29 @@ class StakeHolderManagementService
         $response->result_list = $list;
         return $response;
     }
+
+    public function delete(WebRequest $request, $id) : WebResponse
+    {
+        $response = new WebResponse();
+        $existing = null;
+        switch ($request->code) {
+            case 'departement':
+                $existing = Departement::find($id);
+                break;
+            case 'user':
+                $existing = User::find($id);
+                break;
+            default:
+                throw new Exception("Invalid code");
+                break;
+        }
+        if (is_null($existing)) {
+            throw new Exception("Existing Data Not Found");
+        }
+        $existing->delete();
+        return $response;
+    }
+
     public function store(WebRequest $request, Request $httpRequest) : WebResponse
     {
         $response = new WebResponse();

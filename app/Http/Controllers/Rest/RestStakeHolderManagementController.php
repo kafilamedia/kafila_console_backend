@@ -19,7 +19,6 @@ class RestStakeHolderManagementController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            $payload->user = $request->user();
             $response = $this->stakeHolderManagementService->list($payload);
 
             return parent::jsonResponse($response);
@@ -31,7 +30,6 @@ class RestStakeHolderManagementController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            $payload->user = $request->user();
             $response = $this->stakeHolderManagementService->store($payload, $request);
 
             return parent::jsonResponse($response);
@@ -43,8 +41,18 @@ class RestStakeHolderManagementController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            $payload->user = $request->user();
             $response = $this->stakeHolderManagementService->view($payload, $id);
+
+            return parent::jsonResponse($response);
+        } catch (Throwable $th) {
+            return parent::errorResponse($th);
+        }
+    }
+    public function delete(Request $request, int $id)
+    {
+        try {
+            $payload = parent::getWebRequest($request);
+            $response = $this->stakeHolderManagementService->delete($payload, $id);
 
             return parent::jsonResponse($response);
         } catch (Throwable $th) {

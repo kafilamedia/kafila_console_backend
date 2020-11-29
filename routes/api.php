@@ -45,4 +45,5 @@ Route:: group(['prefix' => 'masterdata' , 'middleware'=>['auth:api', 'role:admin
     Route::post('store', 'Rest\RestStakeHolderManagementController@store');
     Route::post('list', 'Rest\RestStakeHolderManagementController@list');
     Route::post('view/{id}', 'Rest\RestStakeHolderManagementController@view');
+    Route::post('delete/{id}', 'Rest\RestStakeHolderManagementController@delete');
 });

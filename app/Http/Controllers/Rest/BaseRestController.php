@@ -18,10 +18,14 @@ class BaseRestController extends Controller {
         // $this->middleware('api');
     }
  
-
+    /**
+     * construct request payload object and inject auth user to payload
+     */
     protected function getWebRequest(Request $request) : WebRequest
     {
-        return   ObjectUtil::arraytoobj(new WebRequest(), $request->json());
+        $result =  ObjectUtil::arraytoobj(new WebRequest(), $request->json());
+        $result->user = $request->user();
+        return $result;
     }
 
     protected function webResponse($code = null, $message = null)
