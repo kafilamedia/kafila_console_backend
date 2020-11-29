@@ -15,7 +15,10 @@ class AccountService
 {
     public function register(WebRequest $request) : WebResponse
     {
-        $requestModel = $request->user;
+        $requestModel = $request->userModel;
+        if (is_null($requestModel)) {
+            throw new Exception("User data not found");
+        }
         $savedUser = $this->saveUser($requestModel);
         $response = new WebResponse();
         $response->user = $savedUser;
@@ -45,7 +48,12 @@ class AccountService
         $user->display_name = ($requestModel->display_name);
         $user->password = Hash::make(($requestModel->password));
         $user->departement_id = ($requestModel->departement_id);
-        $user->role = ('user');
+        if (!$new) {
+            # code... not updating ROLE
+        } else {
+            $user->role = ('user');
+        }
+        
         $user->save();
         return $user;
     }

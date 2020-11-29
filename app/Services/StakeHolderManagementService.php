@@ -108,7 +108,7 @@ class StakeHolderManagementService
                 $response->departement = $this->storeDepartement($request->departement);
                 break;
             case 'user':
-                $response->user = $this->storeUser($request->user);
+                $response->user = $this->storeUser($request->userModel);
                 break;
             case 'meeting_note':
                 $response->meeting_note = $this->storeMeetingNote($request->meeting_note, $httpRequest->user());
@@ -172,6 +172,9 @@ class StakeHolderManagementService
 
     public function storeUser(User $requesModel) : User
     {
+        if (is_null($requesModel)) {
+            throw new Exception("User data not found");
+        }
         if (!is_null($requesModel->id)) {
             $existing = User::find($requesModel->id);
             if (is_null($existing)) {

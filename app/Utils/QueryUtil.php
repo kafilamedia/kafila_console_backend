@@ -121,7 +121,11 @@ class QueryUtil
         $offset = $has_filter ? ($filter->page - 1) * $limit : 0;
         $order_by = $has_filter ? $filter->orderBy : null;
         $order_type = $has_filter ? ($filter->orderType == 'asc' ? 'asc' : 'desc') : 'asc';
-        $query->skip($offset)->limit($limit);
+        $query->skip($offset);
+        if ($limit > 0) {
+            $query->limit($limit);
+        }
+        
 
         if (!is_null($order_by)) {
             $query->orderBy($order_by, $order_type);

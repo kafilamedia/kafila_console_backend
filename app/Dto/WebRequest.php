@@ -9,6 +9,9 @@ use App\Models\User;
 class WebRequest
 {
     public User $user;
+
+    //crud stuff
+    public User $userModel;
     public Action $action;
     public MeetingNote $meeting_note;
     public Departement $departement;
