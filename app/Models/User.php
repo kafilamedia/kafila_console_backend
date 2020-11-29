@@ -42,6 +42,11 @@ class User extends BaseModel implements
     protected int $departement_id;
     protected Departement $departement ;
     
+    public function __construct()
+    {
+        parent::addFilterable('id', 'departement');
+        parent::addFilterableAlias('departement', 'departements.name');
+    }
     
     public function department()
     {
