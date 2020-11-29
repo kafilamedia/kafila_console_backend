@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use App\Dto\Filter;
 use App\Models\BaseModel;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -73,9 +74,24 @@ class QueryUtil
         $fillable = $joinObject->getFillable();
         $filterable = $joinObject->getFilterable();
 
+        $filterable_alias = $joinObject->getFilterable_aliases();
+
         $selects = array_merge($fillable, $filterable);
 
         foreach ($selects as $key) {
+            $skip = false;
+
+            //aliases is not included in select statement
+            foreach ($filterable_alias as $alias_key => $alias) {
+                if ($key == $alias_key) {
+                    $skip = true;
+                }
+            }
+
+            if ($skip) {
+                continue;
+            }
+
             if (false == ($as_join)) {
                 $has_alias_for_filter_only = $joinObjectRaw->getAlias($key) != null;
                 if (!$has_alias_for_filter_only) {

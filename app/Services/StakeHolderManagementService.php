@@ -203,6 +203,11 @@ class StakeHolderManagementService
             QueryUtil::setFilter($query, $filter);
             $countQuery = clone $query;
             $count = $countQuery->count('users.id');
+            
+            if ($filter->orderBy == "departement") {
+                $filter->orderBy = "departements.name";
+            }
+            
             QueryUtil::setLimitOffsetOrder($query, $filter);
         } else {
             $query->where('users.id', $id);
@@ -241,9 +246,11 @@ class StakeHolderManagementService
             QueryUtil::setFilter($query, $filter);
             $countQuery = clone $query;
             $count = $countQuery->count('meeting_notes.id');
+            
             if ($filter->orderBy == "departement") {
                 $filter->orderBy = "departements.name";
             }
+            
             QueryUtil::setLimitOffsetOrder($query, $filter);
         } else {
             

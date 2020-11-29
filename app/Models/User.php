@@ -44,7 +44,8 @@ class User extends BaseModel implements
     
     public function __construct()
     {
-        parent::addFilterable('id', 'departement');
+        parent::addFilterable('id');
+        parent::addFilterable('departement');
         parent::addFilterableAlias('departement', 'departements.name');
     }
     
