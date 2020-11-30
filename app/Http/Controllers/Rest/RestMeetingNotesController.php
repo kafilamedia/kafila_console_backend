@@ -18,7 +18,6 @@ class RestMeetingNotesController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            $payload->user = $request->user();
             $response = $this->meetingNoteService->list($payload, $request->user());
             return parent::jsonResponse($response);
         } catch (\Throwable $th) {
@@ -46,6 +45,17 @@ class RestMeetingNotesController extends BaseRestController
     }
 
     public function createAction(Request $request)
+    {
+        try {
+            $payload = parent::getWebRequest($request);
+            $response = $this->meetingNoteService->createAction($payload, $request->user());
+            return parent::jsonResponse($response);
+        } catch (\Throwable $th) {
+            return parent::errorResponse($th);
+        }
+    }
+
+    public function resetAction(Request $request)
     {
 
     }

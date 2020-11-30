@@ -78,6 +78,11 @@ class User extends BaseModel implements
         return ($this->attributes["password"]);
     }
  
+    public function isAdmin() :bool
+    {
+        return $this->hasRole('admin');
+    }
+
     public function hasRole($roles)
     {
         // dd($role, $this->attributes['role']);

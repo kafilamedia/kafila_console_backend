@@ -4,7 +4,10 @@ namespace App\Services;
 use App\Dto\Filter;
 use App\Dto\WebRequest;
 use App\Dto\WebResponse;
+use App\Models\Action;
+use App\Models\MeetingNote;
 use App\Models\User;
+use Exception;
 
 class MeetingNoteService
 {
@@ -40,6 +43,33 @@ class MeetingNoteService
         $result = $this->stakeHolderManagementService->getMeetingNoteList($filter, $user, $id);
         $response = new WebResponse();
         $response->meeting_note = $result['list'][0];
+        return $response;
+    }
+
+    public function createAction(WebRequest $request, User $user) : WebResponse
+    {
+        $response = new WebResponse();
+        $actionModel = $request->action;
+        $meeting_note_id = $actionModel->note_id;
+        $meeting_note = MeetingNote::find($meeting_note_id);
+        if (is_null($meeting_note)) {
+            throw new Exception("Corresponding meeting note invalid");
+        }
+        if (!$user->isAdmin()) {
+            if ($meeting_note->departement_id != $user->departement_id) {
+                throw new Exception("action not allowed");
+            }
+        }
+        $newRecord = new Action();
+        //override existing
+        $existing = Action::where('note_id', $meeting_note_id)->first();
+        if (!is_null($existing)) {
+            $newRecord = $existing;
+        }
+        $newRecord->note_id = $meeting_note_id;
+        $newRecord->description = $actionModel->description;
+        $newRecord->date = $actionModel->date;
+        $newRecord->save();
         return $response;
     }
 }

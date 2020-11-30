@@ -24,7 +24,11 @@ class BaseRestController extends Controller {
     protected function getWebRequest(Request $request) : WebRequest
     {
         $result =  ObjectUtil::arraytoobj(new WebRequest(), $request->json());
-        $result->user = $request->user();
+
+        if (!is_null($request->user())) {
+            $result->user = $request->user();
+        }
+        
         return $result;
     }
 

@@ -40,6 +40,7 @@ Route:: group(['prefix' => 'notes' , 'middleware'=>'auth:api'  ], function () {
 
 Route:: group(['prefix' => 'action' , 'middleware'=>'auth:api'  ], function () {
     Route::post('store', 'Rest\RestMeetingNotesController@storeAction');
+    Route::post('reset', 'Rest\RestMeetingNotesController@resetAction');
 });
 Route:: group(['prefix' => 'masterdata' , 'middleware'=>['auth:api', 'role:admin']  ], function () {
     Route::post('store', 'Rest\RestStakeHolderManagementController@store');

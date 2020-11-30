@@ -15,7 +15,7 @@ class AccountService
 {
     public function register(WebRequest $request) : WebResponse
     {
-        $requestModel = $request->userModel;
+        $requestModel = $request->userMuseodel;
         if (is_null($requestModel)) {
             throw new Exception("User data not found");
         }

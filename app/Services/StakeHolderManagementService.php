@@ -259,7 +259,7 @@ class StakeHolderManagementService
         $select_array = array_merge($user_select_fields, $departement_select_fields, $meeting_note_select_fields);
         
         $query->select('meeting_notes.id as id', ... $select_array);
-        if (!$user->hasRole('admin')) {
+        if (!$user->isAdmin()) {
             $query->where('departements.id', $user->departement_id);
         }
         
@@ -275,6 +275,9 @@ class StakeHolderManagementService
             
             if ($filter->orderBy == "departement") {
                 $filter->orderBy = "departements.name";
+            }
+            if ($filter->orderBy == "user") {
+                $filter->orderBy = "users.name";
             }
             
             QueryUtil::setLimitOffsetOrder($query, $filter);
