@@ -25,6 +25,10 @@ class MeetingNote extends BaseModel
     protected User $user;
     protected Departement $departement;
 
+    //not column
+    protected ?Action $action = null;
+    protected ?bool $is_closed;
+
     public function __construct()
     {
         parent::addFilterable('id', 'departement', 'user');

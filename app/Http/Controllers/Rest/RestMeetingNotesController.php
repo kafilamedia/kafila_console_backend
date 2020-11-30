@@ -44,7 +44,7 @@ class RestMeetingNotesController extends BaseRestController
         }
     }
 
-    public function createAction(Request $request)
+    public function storeAction(Request $request)
     {
         try {
             $payload = parent::getWebRequest($request);
@@ -57,6 +57,12 @@ class RestMeetingNotesController extends BaseRestController
 
     public function resetAction(Request $request)
     {
-
+        try {
+            $payload = parent::getWebRequest($request);
+            $response = $this->meetingNoteService->resetAction($payload, $request->user());
+            return parent::jsonResponse($response);
+        } catch (\Throwable $th) {
+            return parent::errorResponse($th);
+        }
     }
 }

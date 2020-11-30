@@ -31,8 +31,25 @@ class MeetingNoteService
     {
         $filter = is_null($webRequest->filter)? new Filter(): $webRequest->filter;
         $result = $this->stakeHolderManagementService->getMeetingNoteList($filter, $user);
+        $records = $result['list'];
+
+        //check if closed
+        foreach ($records as $record) {
+            try {
+                $action = Action::where('note_id', $record->id)->first();
+                if (!is_null($action)) {
+                    $record->is_closed = true;
+                } else {
+                    $record->is_closed = false;
+                }
+            } catch (\Throwable $th) {
+                // throw $th;
+                $record->is_closed = false;
+            }
+        }
+
         $response = new WebResponse();
-        $response->result_list = $result['list'];
+        $response->result_list = $records;
         $response->count = $result['count'];
         $response->filter = StakeHolderManagementService::adjustFilterKey($filter);
         return $response;
@@ -42,7 +59,20 @@ class MeetingNoteService
         $filter = new Filter();
         $result = $this->stakeHolderManagementService->getMeetingNoteList($filter, $user, $id);
         $response = new WebResponse();
-        $response->meeting_note = $result['list'][0];
+        $meeting_note = $result['list'][0];
+        try {
+            $action = Action::where('note_id', $meeting_note->id)->first();
+            if (!is_null($action)) {
+                $meeting_note->is_closed = true;
+                $meeting_note->action = $action;
+            } else {
+                $meeting_note->is_closed = false;
+            }
+        } catch (\Throwable $th) {
+            // throw $th;
+            $meeting_note->is_closed = false;
+        }
+        $response->meeting_note = $meeting_note;
         return $response;
     }
 
@@ -70,6 +100,28 @@ class MeetingNoteService
         $newRecord->description = $actionModel->description;
         $newRecord->date = $actionModel->date;
         $newRecord->save();
+        return $response;
+    }
+
+    public function resetAction(WebRequest $request, User $user) : WebResponse
+    {
+        $response = new WebResponse();
+        $actionModel = $request->action;
+        $meeting_note_id = $actionModel->note_id;
+        $meeting_note = MeetingNote::find($meeting_note_id);
+        if (is_null($meeting_note)) {
+            throw new Exception("Corresponding meeting note invalid");
+        }
+        if (!$user->isAdmin()) {
+            if ($meeting_note->departement_id != $user->departement_id) {
+                throw new Exception("action not allowed");
+            }
+        }
+        //override existing
+        $existing = Action::where('note_id', $meeting_note_id)->first();
+        if (!is_null($existing)) {
+            $existing->delete();
+        }
         return $response;
     }
 }
