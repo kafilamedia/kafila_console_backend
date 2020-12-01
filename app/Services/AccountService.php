@@ -7,12 +7,30 @@ use App\Dto\WebResponse;
 use App\Models\User;
 use App\Utils\ObjectUtil;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class AccountService
 {
+
+    public function updateProfile(Request $request, User $userModel) : WebResponse
+    {
+        $response = new WebResponse();
+        $user = $request->user();
+        $user->email = $userModel->email;
+        $user->display_name = $userModel->display_name;
+        $user->name = $userModel->name;
+
+        if (isset($userModel->password)
+            && !is_null($userModel->oassword) && "" != $userModel->password) {
+            $user->password = Hash::make(($userModel->password));
+        }
+        $user->email = $userModel->email;
+        $user->save();
+        return $response;
+    }
     public function register(WebRequest $request) : WebResponse
     {
         $requestModel = $request->userMuseodel;
@@ -55,8 +73,12 @@ class AccountService
         } else {
             $user->password = Hash::make(($requestModel->password));
         }
-        
-        $user->departement_id = ($requestModel->departement_id);
+        //if will update user and user.password field is not provided
+        if ((!isset($requestModel->departement_id) && is_null($requestModel->departement_id) || "" == $requestModel->departement_id) && $oldDataExist) {
+            // $user->password = Hash::make(config('common.default_password')); leave as old record password
+        } else {
+            $user->departement_id = ($requestModel->departement_id);
+        }
         if (!$new) {
             # code... not updating ROLE
         } else {
@@ -85,7 +107,7 @@ class AccountService
             $response->user = $user;
             // $request->session()->put('api_token', $hashedToken);
         } else {
-            throw new Exception("Login Failed");
+            throw new Exception("Login Failed: password invalid");
         }
         return $response;
     }

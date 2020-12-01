@@ -29,6 +29,7 @@ Route::prefix('account')->group(function () {
 Route:: group(['prefix' => 'accountdashboard' , 'middleware'=>'auth:api'  ], function () {
     Route::post('user', 'Rest\RestAccountDashboardController@getUser');
     Route::post('logout', 'Rest\RestAccountController@logout');
+    Route::post('updateprofile', 'Rest\RestAccountDashboardController@updateProfile');
     
 });
 Route:: group(['prefix' => 'notes' , 'middleware'=>'auth:api'  ], function () {

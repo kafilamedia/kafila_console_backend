@@ -36,6 +36,17 @@ class RestAccountDashboardController extends BaseRestController
             return parent::errorResponse($th);
         }
     }
+    public function updateProfile(Request $request) : JsonResponse
+    {
+        try {
+            $payload = parent::getWebRequest($request);
+            // dd($payload->user);
+            $response = $this->account_service->updateProfile($request, $payload->userModel);
+            return parent::jsonResponse($response);
+        } catch (Throwable $th) {
+            return parent::errorResponse($th);
+        }
+    }
     public function resetUserPassword(Request $request) : JsonResponse
     {
         try {
