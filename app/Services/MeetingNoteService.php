@@ -100,6 +100,8 @@ class MeetingNoteService
         $newRecord->description = $actionModel->description;
         $newRecord->date = $actionModel->date;
         $newRecord->save();
+
+        $response->action = $newRecord;
         return $response;
     }
 
