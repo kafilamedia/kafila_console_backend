@@ -22,9 +22,9 @@ class AccountService
         $user->email = $userModel->email;
         $user->display_name = $userModel->display_name;
         $user->name = $userModel->name;
-
-        if (isset($userModel->password)
-            && !is_null($userModel->oassword) && "" != $userModel->password) {
+        
+        if (is_null($userModel->oassword) 
+            && "" != $userModel->password) {
             $user->password = Hash::make(($userModel->password));
         }
         $user->email = $userModel->email;
