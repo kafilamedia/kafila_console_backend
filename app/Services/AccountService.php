@@ -37,16 +37,25 @@ class AccountService
     public function saveUser(User $requestModel, bool $new = true) : User
     {
         $user = new User();
+        $oldDataExist = false;
         if (!$new) {
             $user = User::find($requestModel->id);
             if (is_null($user)) {
                 throw new Exception("Existing data not found");
             }
+            $oldDataExist = true;
         }
         $user->email = $requestModel->email;
-        $user->name =($requestModel->name);
+        $user->name = ($requestModel->name);
         $user->display_name = ($requestModel->display_name);
-        $user->password = Hash::make(($requestModel->password));
+
+        //if will update user and user.password field is not provided
+        if ((is_null($requestModel->password) || "" == $requestModel->password) && $oldDataExist) {
+            // $user->password = Hash::make(config('common.default_password')); leave as old record password
+        } else {
+            $user->password = Hash::make(($requestModel->password));
+        }
+        
         $user->departement_id = ($requestModel->departement_id);
         if (!$new) {
             # code... not updating ROLE
@@ -87,5 +96,18 @@ class AccountService
         $user->api_token = $token;
         $user->save();
         return $user;
+    }
+
+    public function resetUserPassword(WebRequest $request) : WebResponse
+    {
+        $response = new WebResponse();
+        $userEmail = $request->userModel->email;
+        $user = User::where('email', $userEmail)->first();
+        if (is_null($user)) {
+            throw new Exception("User does not exist");
+        }
+        $user->password = Hash::make(config('common.default_password'));
+        $user->save();
+        return $response;
     }
 }

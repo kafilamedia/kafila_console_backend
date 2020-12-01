@@ -81,6 +81,10 @@ class QueryUtil
         foreach ($selects as $key) {
             $skip = false;
 
+            if ($joinObjectRaw->isIgnoredInSelectStatement($key)) {
+                continue;
+            }
+
             //aliases is not included in select statement
             foreach ($filterable_alias as $alias_key => $alias) {
                 if ($key == $alias_key) {

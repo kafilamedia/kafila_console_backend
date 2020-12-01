@@ -47,6 +47,7 @@ class User extends BaseModel implements
         parent::addFilterable('id');
         parent::addFilterable('departement');
         parent::addFilterableAlias('departement', 'departements.name');
+        parent::addIgnorableSelectField('password');
     }
     
     public function department()

@@ -36,5 +36,15 @@ class RestAccountDashboardController extends BaseRestController
             return parent::errorResponse($th);
         }
     }
+    public function resetUserPassword(Request $request) : JsonResponse
+    {
+        try {
+            $payload = parent::getWebRequest($request);
+            $response = $this->account_service->resetUserPassword($payload);
+            return parent::jsonResponse($response);
+        } catch (Throwable $th) {
+            return parent::errorResponse($th);
+        }
+    }
  
 }
