@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Rest;
 
+use App\Dto\WebResponse;
 use App\Http\Controllers\Controller;
 use App\Services\IssuesService;
+use Exception;
 use Illuminate\Http\Request;
+use Throwable;
 
 class RestIssuesController extends BaseRestController
 {
@@ -40,6 +43,19 @@ class RestIssuesController extends BaseRestController
             $response = $this->issueService->view($id, $request->user());
             return parent::jsonResponse($response);
         } catch (\Throwable $th) {
+            return parent::errorResponse($th);
+        }
+    }
+    public function delete(Request $request, int $id)
+    {
+        try {
+            if ($request->user()->isAdmin() == false) {
+                throw new Exception("Unauthorized access");
+            }
+            // $payload = parent::getWebRequest($request);
+            $this->issueService->delete($id);
+            return parent::jsonResponse(new WebResponse());
+        } catch (Throwable $th) {
             return parent::errorResponse($th);
         }
     }

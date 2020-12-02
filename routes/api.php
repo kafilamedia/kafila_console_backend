@@ -42,7 +42,7 @@ Route:: group(['prefix' => 'issues' , 'middleware'=>'auth:api'  ], function () {
     Route::post('list', 'Rest\RestIssuesController@list');
     Route::post('store', 'Rest\RestIssuesController@store');
     Route::post('view/{id}', 'Rest\RestIssuesController@view');
-    // Route::post('delete', 'Rest\RestMeetingNotesController@destroy');
+    Route::post('delete/{id}', 'Rest\RestIssuesController@delete');
 });
 
 Route:: group(['prefix' => 'action' , 'middleware'=>'auth:api'  ], function () {

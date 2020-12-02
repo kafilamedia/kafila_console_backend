@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Dto\Filter;
 use App\Dto\WebRequest;
 use App\Dto\WebResponse;
+use App\Models\Issue;
 use App\Models\MeetingAction;
 use App\Models\MeetingNote;
 use App\Models\User;
@@ -74,6 +75,12 @@ class IssuesService
         }
         $response->meeting_note = $meeting_note;
         return $response;
+    }
+
+    public function delete($id)
+    {
+        $model = Issue::find($id);
+        $model->delete();
     }
 
     // public function createAction(WebRequest $request, User $user) : WebResponse
