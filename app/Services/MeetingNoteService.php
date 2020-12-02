@@ -12,9 +12,9 @@ use Exception;
 class MeetingNoteService
 {
 
-    private StakeHolderManagementService $stakeHolderManagementService;
+    private MasterDataService $stakeHolderManagementService;
 
-    public function __construct(StakeHolderManagementService $stakeHolderManagementService)
+    public function __construct(MasterDataService $stakeHolderManagementService)
     {
         $this->stakeHolderManagementService = $stakeHolderManagementService;
     }
@@ -51,7 +51,7 @@ class MeetingNoteService
         $response = new WebResponse();
         $response->result_list = $records;
         $response->count = $result['count'];
-        $response->filter = StakeHolderManagementService::adjustFilterKey($filter);
+        $response->filter = MasterDataService::adjustFilterKey($filter);
         return $response;
     }
     public function view($id, User $user) : WebResponse

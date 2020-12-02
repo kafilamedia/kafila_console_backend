@@ -11,7 +11,6 @@ use App\Models\User;
 use App\Utils\ObjectUtil;
 use App\Utils\QueryUtil;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -22,7 +21,7 @@ use Throwable;
 
 define('DEFAULT_LIMIT', 10);
 
-class StakeHolderManagementService
+class MasterDataService
 {
     private AccountService $accountService;
 

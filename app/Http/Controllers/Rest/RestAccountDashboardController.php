@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Rest;
 use App\Dto\WebRequest;
 use App\Dto\WebResponse;
 use App\Services\AccountService;
-use App\Services\StakeHolderManagementService;
+use App\Services\MasterDataService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -14,9 +14,9 @@ use Throwable;
 class RestAccountDashboardController extends BaseRestController
 {
     private AccountService $account_service;
-    private StakeHolderManagementService $stakeHolderManagementService;
+    private MasterDataService $stakeHolderManagementService;
 
-    public function __construct(AccountService $account_service, StakeHolderManagementService $stakeHolderManagementService)
+    public function __construct(AccountService $account_service, MasterDataService $stakeHolderManagementService)
     {
         $this->account_service = $account_service;
         $this->stakeHolderManagementService = $stakeHolderManagementService;

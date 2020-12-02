@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Rest;
 
-use App\Services\StakeHolderManagementService;
+use App\Services\MasterDataService;
 use Illuminate\Http\Request;
 use Throwable;
 
 class RestStakeHolderManagementController extends BaseRestController
 {
-    private StakeHolderManagementService $stakeHolderManagementService;
+    private MasterDataService $stakeHolderManagementService;
 
-    public function __construct(StakeHolderManagementService $stakeHolderManagementService)
+    public function __construct(MasterDataService $stakeHolderManagementService)
     {
         $this->stakeHolderManagementService = $stakeHolderManagementService;
     }

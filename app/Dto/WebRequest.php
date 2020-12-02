@@ -3,6 +3,7 @@ namespace App\Dto;
 
 use App\Models\MeetingAction;
 use App\Models\Departement;
+use App\Models\FollowedUpIssue;
 use App\Models\Issue;
 use App\Models\MeetingNote;
 use App\Models\User;
@@ -16,8 +17,10 @@ class WebRequest
     public MeetingAction $action;
     public MeetingNote $meeting_note;
     public Departement $departement;
+    
     public Issue $issue;
-
+    public FollowedUpIssue $followed_up_issue;
+    
     public ?string $code = null;
     public ?Filter $filter = null;
     

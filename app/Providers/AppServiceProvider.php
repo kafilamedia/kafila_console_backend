@@ -5,7 +5,7 @@ namespace App\Providers;
 use App\Services\AccountService;
 use App\Services\IssuesService;
 use App\Services\MeetingNoteService;
-use App\Services\StakeHolderManagementService;
+use App\Services\MasterDataService;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,14 +20,14 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         $accountService = new AccountService();
-        $stakeHolderManagementService = new StakeHolderManagementService($accountService);
+        $stakeHolderManagementService = new MasterDataService($accountService);
         $meetingNoteService = new MeetingNoteService($stakeHolderManagementService);
         $issuesService = new IssuesService($stakeHolderManagementService);
 
         $this->app->bind(AccountService::class, function ($app) use ($accountService) {
             return $accountService;
         });
-        $this->app->bind(StakeHolderManagementService::class, function ($app) use ($stakeHolderManagementService) {
+        $this->app->bind(MasterDataService::class, function ($app) use ($stakeHolderManagementService) {
             return $stakeHolderManagementService;
         });
         $this->app->bind(MeetingNoteService::class, function ($app) use ($meetingNoteService) {

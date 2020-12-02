@@ -62,23 +62,23 @@ class RestIssuesController extends BaseRestController
 
     public function storeAction(Request $request)
     {
-        // try {
-        //     $payload = parent::getWebRequest($request);
-        //     $response = $this->issueService->createAction($payload, $request->user());
-        //     return parent::jsonResponse($response);
-        // } catch (\Throwable $th) {
-        //     return parent::errorResponse($th);
-        // }
+        try {
+            $payload = parent::getWebRequest($request);
+            $response = $this->issueService->createAction($payload, $request->user());
+            return parent::jsonResponse($response);
+        } catch (\Throwable $th) {
+            return parent::errorResponse($th);
+        }
     }
 
     public function resetAction(Request $request)
     {
-        // try {
-        //     $payload = parent::getWebRequest($request);
-        //     $response = $this->issueService->resetAction($payload, $request->user());
-        //     return parent::jsonResponse($response);
-        // } catch (\Throwable $th) {
-        //     return parent::errorResponse($th);
-        // }
+        try {
+            $payload = parent::getWebRequest($request);
+            $response = $this->issueService->resetAction($payload, $request->user());
+            return parent::jsonResponse($response);
+        } catch (\Throwable $th) {
+            return parent::errorResponse($th);
+        }
     }
 }

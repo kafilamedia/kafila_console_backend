@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Dto\Filter;
 use App\Dto\WebRequest;
 use App\Dto\WebResponse;
+use App\Models\FollowedUpIssue;
 use App\Models\Issue;
 use App\Models\MeetingAction;
 use App\Models\MeetingNote;
@@ -13,9 +14,9 @@ use Exception;
 class IssuesService
 {
 
-    private StakeHolderManagementService $stakeHolderManagementService;
+    private MasterDataService $stakeHolderManagementService;
 
-    public function __construct(StakeHolderManagementService $stakeHolderManagementService)
+    public function __construct(MasterDataService $stakeHolderManagementService)
     {
         $this->stakeHolderManagementService = $stakeHolderManagementService;
     }
@@ -37,12 +38,12 @@ class IssuesService
         //check if closed
         foreach ($records as $record) {
             try {
-                // $action = MeetingAction::where('note_id', $record->id)->first();
-                // if (!is_null($action)) {
-                //     $record->is_closed = true;
-                // } else {
-                //     $record->is_closed = false;
-                // }
+                $action = FollowedUpIssue::where('issue_id', $record->id)->first();
+                if (!is_null($action)) {
+                    $record->is_closed = true;
+                } else {
+                    $record->is_closed = false;
+                }
             } catch (\Throwable $th) {
                 // throw $th;
                 $record->is_closed = false;
@@ -52,7 +53,7 @@ class IssuesService
         $response = new WebResponse();
         $response->result_list = $records;
         $response->count = $result['count'];
-        $response->filter = StakeHolderManagementService::adjustFilterKey($filter);
+        $response->filter = MasterDataService::adjustFilterKey($filter);
         return $response;
     }
     public function view($id, User $user) : WebResponse
@@ -60,20 +61,20 @@ class IssuesService
         $filter = new Filter();
         $result = $this->stakeHolderManagementService->getIssueList($filter, $user, $id);
         $response = new WebResponse();
-        $meeting_note = $result['list'][0];
+        $issue = $result['list'][0];
         try {
-            // $action = MeetingAction::where('note_id', $meeting_note->id)->first();
-            // if (!is_null($action)) {
-            //     $meeting_note->is_closed = true;
-            //     $meeting_note->action = $action;
-            // } else {
-            //     $meeting_note->is_closed = false;
-            // }
+            $action = FollowedUpIssue::where('issue_id', $issue->id)->first();
+            if (!is_null($action)) {
+                $issue->is_closed = true;
+                $issue->follow_up = $action;
+            } else {
+                $issue->is_closed = false;
+            }
         } catch (\Throwable $th) {
             // throw $th;
-            $meeting_note->is_closed = false;
+            $issue->is_closed = false;
         }
-        $response->meeting_note = $meeting_note;
+        $response->issue = $issue;
         return $response;
     }
 
@@ -83,54 +84,54 @@ class IssuesService
         $model->delete();
     }
 
-    // public function createAction(WebRequest $request, User $user) : WebResponse
-    // {
-    //     $response = new WebResponse();
-    //     $actionModel = $request->action;
-    //     $meeting_note_id = $actionModel->note_id;
-    //     $meeting_note = MeetingNote::find($meeting_note_id);
-    //     if (is_null($meeting_note)) {
-    //         throw new Exception("Corresponding meeting note invalid");
-    //     }
-    //     if (!$user->isAdmin()) {
-    //         if ($meeting_note->departement_id != $user->departement_id) {
-    //             throw new Exception("action not allowed");
-    //         }
-    //     }
-    //     $newRecord = new MeetingAction();
-    //     //override existing
-    //     $existing = MeetingAction::where('note_id', $meeting_note_id)->first();
-    //     if (!is_null($existing)) {
-    //         $newRecord = $existing;
-    //     }
-    //     $newRecord->note_id = $meeting_note_id;
-    //     $newRecord->description = $actionModel->description;
-    //     $newRecord->date = $actionModel->date;
-    //     $newRecord->save();
+    public function createAction(WebRequest $request, User $user) : WebResponse
+    {
+        $response = new WebResponse();
+        $actionModel = $request->followed_up_issue;
+        $issue_id = $actionModel->issue_id;
+        $issue = Issue::find($issue_id);
+        if (is_null($issue)) {
+            throw new Exception("Corresponding issue invalid");
+        }
+        if (!$user->isAdmin()) {
+            if ($issue->departement_id != $user->departement_id) {
+                throw new Exception("action not allowed");
+            }
+        }
+        $newRecord = new FollowedUpIssue();
+        //override existing
+        $existing = FollowedUpIssue::where('issue_id', $issue_id)->first();
+        if (!is_null($existing)) {
+            $newRecord = $existing;
+        }
+        $newRecord->issue_id = $issue_id;
+        $newRecord->description = $actionModel->description;
+        $newRecord->date = $actionModel->date;
+        $newRecord->save();
 
-    //     $response->action = $newRecord;
-    //     return $response;
-    // }
+        $response->followed_up_issue = $newRecord;
+        return $response;
+    }
 
-    // public function resetAction(WebRequest $request, User $user) : WebResponse
-    // {
-    //     $response = new WebResponse();
-    //     $actionModel = $request->action;
-    //     $meeting_note_id = $actionModel->note_id;
-    //     $meeting_note = MeetingNote::find($meeting_note_id);
-    //     if (is_null($meeting_note)) {
-    //         throw new Exception("Corresponding meeting note invalid");
-    //     }
-    //     if (!$user->isAdmin()) {
-    //         if ($meeting_note->departement_id != $user->departement_id) {
-    //             throw new Exception("action not allowed");
-    //         }
-    //     }
-    //     //override existing
-    //     $existing = MeetingAction::where('note_id', $meeting_note_id)->first();
-    //     if (!is_null($existing)) {
-    //         $existing->delete();
-    //     }
-    //     return $response;
-    // }
+    public function resetAction(WebRequest $request, User $user) : WebResponse
+    {
+        $response = new WebResponse();
+        $actionModel = $request->followed_up_issue;
+        $issue_id = $actionModel->issue_id;
+        $issue = Issue::find($issue_id);
+        if (is_null($issue)) {
+            throw new Exception("Corresponding issue invalid");
+        }
+        if (!$user->isAdmin()) {
+            if ($issue->departement_id != $user->departement_id) {
+                throw new Exception("action not allowed");
+            }
+        }
+        //override existing
+        $existing = FollowedUpIssue::where('issue_id', $issue_id)->first();
+        if (!is_null($existing)) {
+            $existing->delete();
+        }
+        return $response;
+    }
 }

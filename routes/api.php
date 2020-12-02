@@ -37,12 +37,14 @@ Route:: group(['prefix' => 'notes' , 'middleware'=>'auth:api'  ], function () {
     Route::post('store', 'Rest\RestMeetingNotesController@store');
     Route::post('view/{id}', 'Rest\RestMeetingNotesController@view');
     // Route::post('delete', 'Rest\RestMeetingNotesController@destroy');
+    Route::post('action', 'Rest\RestMeetingNotesController@storeAction');
 });
 Route:: group(['prefix' => 'issues' , 'middleware'=>'auth:api'  ], function () {
     Route::post('list', 'Rest\RestIssuesController@list');
     Route::post('store', 'Rest\RestIssuesController@store');
     Route::post('view/{id}', 'Rest\RestIssuesController@view');
     Route::post('delete/{id}', 'Rest\RestIssuesController@delete');
+    Route::post('followup', 'Rest\RestIssuesController@storeAction');
 });
 
 Route:: group(['prefix' => 'action' , 'middleware'=>'auth:api'  ], function () {

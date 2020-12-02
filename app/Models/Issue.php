@@ -20,7 +20,7 @@ class Issue extends BaseModel
     protected Departement $departement;
 
     //not column
-    protected ?MeetingAction $action = null;
+    protected ?FollowedUpIssue $follow_up = null;
     protected ?bool $is_closed;
 
     public function __construct()
