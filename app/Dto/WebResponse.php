@@ -3,6 +3,7 @@ namespace App\Dto;
 
 use App\Models\MeetingAction;
 use App\Models\Departement;
+use App\Models\Issue;
 use App\Models\MeetingNote;
 use App\Models\User;
 use DateTimeZone;
@@ -17,6 +18,7 @@ class WebResponse
     public MeetingAction $action;
     public MeetingNote $meeting_note;
     public Departement $departement;
+    public Issue $issue;
     public array $result_list;
     public int $count = 0;
 

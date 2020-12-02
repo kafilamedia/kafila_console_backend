@@ -5,6 +5,7 @@ use App\Dto\Filter;
 use App\Dto\WebRequest;
 use App\Dto\WebResponse;
 use App\Models\Departement;
+use App\Models\Issue;
 use App\Models\MeetingNote;
 use App\Models\User;
 use App\Utils\ObjectUtil;
@@ -43,6 +44,9 @@ class StakeHolderManagementService
                 break;
             case 'meeting_note':
                 $list = $this->getMeetingNoteList($request->filter, $request->user);
+                break;
+            case 'issue':
+                $list = $this->getIssueList($request->filter, $request->user);
                 break;
             default:
                 throw new Exception("Invalid code");
@@ -88,8 +92,15 @@ class StakeHolderManagementService
             case 'meeting_note':
                 $result = $this->getMeetingNoteList($request->filter, $request->user, $id)['list'];
                 if (sizeof($result) > 0) {
-                    $response->user = $result[0];
-                    $list = [$response->user];
+                    $response->meeting_note = $result[0];
+                    $list = [$response->meeting_note];
+                }
+                break;
+            case 'issue':
+                $result = $this->getIssueList($request->filter, $request->user, $id)['list'];
+                if (sizeof($result) > 0) {
+                    $response->issue = $result[0];
+                    $list = [$response->issue];
                 }
                 break;
             default:
@@ -135,6 +146,9 @@ class StakeHolderManagementService
                 break;
             case 'meeting_note':
                 $response->meeting_note = $this->storeMeetingNote($request->meeting_note, $httpRequest->user());
+                break;
+            case 'issue':
+                $response->issue = $this->storeIssue($request->issue, $httpRequest->user());
                 break;
             default:
                 throw new Exception("Invalid code");
@@ -208,6 +222,37 @@ class StakeHolderManagementService
         $saved = $this->accountService->saveUser($requesModel, is_null($requesModel->id));
         return $saved;
     }
+
+    public function storeIssue(Issue $requesModel, User $user) : Issue
+    {
+        $model = new Issue();
+        $existing = null;
+        if (!is_null($requesModel->id)) {
+            $existing = Issue::find($requesModel->id);
+            if (!is_null($existing)) {
+                $model = $existing;
+            } else {
+                throw new Exception("existing data Not Found");
+            }
+        }
+        //TODO: determine update record fields
+        if (true || is_null($existing)) {
+            //if new record, enable to fills these values
+            $model->date = $requesModel->date;
+            $model->issuer = $requesModel->issuer;
+            $model->issue_input = $requesModel->issue_input;
+            $model->email = $requesModel->email;
+        }
+        //
+        $model->content = $requesModel->content;
+        $model->place = $requesModel->place;
+        $model->departement_id = $requesModel->departement_id;
+
+        $model->save();
+        return $model;
+    }
+
+    /////////////////// get lists /////////////////////
 
     public function getUserList(WebRequest $request, $id = null) : array
     {
@@ -318,6 +363,50 @@ class StakeHolderManagementService
        
         return [
             'list'=>QueryUtil::rowMappedList($list, new Departement()),
+            'count'=>$count
+        ];
+    }
+
+    public function getIssueList(?Filter $filter, User $user, $id = null) : array
+    {
+        
+        $query =  DB::table('issues')
+        ->leftJoin('departements', 'departements.id', '=', 'issues.departement_id');
+        
+        $departement_select_fields = QueryUtil::setFillableSelect(new Departement(), true, 'departement');
+        
+        $meeting_note_select_fields = QueryUtil::setFillableSelect(new Issue());
+        $select_array = array_merge($departement_select_fields, $meeting_note_select_fields);
+        
+        $query->select('issues.id as id', ... $select_array);
+        if (!$user->isAdmin()) {
+            $query->where('departements.id', $user->departement_id);
+        }
+        
+        $count = 0;
+        if (is_null($id)) {
+            // if (isset($filter->fieldsFilter['departement'])) {
+            //     $query->where('departements.name', 'like', '%'.$filter->fieldsFilter['departement'].'%');
+            // }
+            $filter = ObjectUtil::adjustFieldFilter(new Issue(), $filter);
+            QueryUtil::setFilter($query, $filter);
+            $countQuery = clone $query;
+            $count = $countQuery->count('issues.id');
+            
+            if ($filter->orderBy == "departement") {
+                $filter->orderBy = "departements.name";
+            }
+            
+            QueryUtil::setLimitOffsetOrder($query, $filter);
+        } else {
+            $query->where('issues.id', $id);
+        }
+
+        
+        
+        $list = $query->get();
+        return [
+            'list'=>QueryUtil::rowMappedList($list, new Issue()),
             'count'=>$count
         ];
     }
