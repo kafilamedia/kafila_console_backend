@@ -1,4 +1,4 @@
 <?php
 use Illuminate\Support\Facades\Route;
 
-Route::resource('/admin', 'Web\ConsoleController'); 
+Route::resource('/admin', 'Web\ConsoleController');

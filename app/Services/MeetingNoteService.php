@@ -4,7 +4,7 @@ namespace App\Services;
 use App\Dto\Filter;
 use App\Dto\WebRequest;
 use App\Dto\WebResponse;
-use App\Models\Action;
+use App\Models\MeetingAction;
 use App\Models\MeetingNote;
 use App\Models\User;
 use Exception;
@@ -36,7 +36,7 @@ class MeetingNoteService
         //check if closed
         foreach ($records as $record) {
             try {
-                $action = Action::where('note_id', $record->id)->first();
+                $action = MeetingAction::where('note_id', $record->id)->first();
                 if (!is_null($action)) {
                     $record->is_closed = true;
                 } else {
@@ -61,7 +61,7 @@ class MeetingNoteService
         $response = new WebResponse();
         $meeting_note = $result['list'][0];
         try {
-            $action = Action::where('note_id', $meeting_note->id)->first();
+            $action = MeetingAction::where('note_id', $meeting_note->id)->first();
             if (!is_null($action)) {
                 $meeting_note->is_closed = true;
                 $meeting_note->action = $action;
@@ -90,9 +90,9 @@ class MeetingNoteService
                 throw new Exception("action not allowed");
             }
         }
-        $newRecord = new Action();
+        $newRecord = new MeetingAction();
         //override existing
-        $existing = Action::where('note_id', $meeting_note_id)->first();
+        $existing = MeetingAction::where('note_id', $meeting_note_id)->first();
         if (!is_null($existing)) {
             $newRecord = $existing;
         }
@@ -120,7 +120,7 @@ class MeetingNoteService
             }
         }
         //override existing
-        $existing = Action::where('note_id', $meeting_note_id)->first();
+        $existing = MeetingAction::where('note_id', $meeting_note_id)->first();
         if (!is_null($existing)) {
             $existing->delete();
         }

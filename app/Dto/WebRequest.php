@@ -1,7 +1,7 @@
 <?php
 namespace App\Dto;
 
-use App\Models\Action;
+use App\Models\MeetingAction;
 use App\Models\Departement;
 use App\Models\MeetingNote;
 use App\Models\User;
@@ -12,7 +12,7 @@ class WebRequest
 
     //crud stuff
     public ?User $userModel;
-    public Action $action;
+    public MeetingAction $action;
     public MeetingNote $meeting_note;
     public Departement $departement;
 

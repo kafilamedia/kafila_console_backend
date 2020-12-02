@@ -26,7 +26,7 @@ class MeetingNote extends BaseModel
     protected Departement $departement;
 
     //not column
-    protected ?Action $action = null;
+    protected ?MeetingAction $action = null;
     protected ?bool $is_closed;
 
     public function __construct()
