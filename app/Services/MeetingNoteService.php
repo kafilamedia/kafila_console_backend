@@ -99,6 +99,7 @@ class MeetingNoteService
         $newRecord->note_id = $meeting_note_id;
         $newRecord->description = $actionModel->description;
         $newRecord->date = $actionModel->date;
+        $newRecord->user_id = $user->id;
         $newRecord->save();
 
         $response->action = $newRecord;

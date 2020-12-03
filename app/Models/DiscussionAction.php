@@ -4,30 +4,31 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class FollowedUpIssue extends Model
+class DiscussionAction extends Model
 {
     //
     protected $fillable = [
         'date',
         'description',
-        'issue_id',
+        'topic_id',
         'user_id'
     ];
 
     protected int $id;
     protected string $description;
     protected $date;
-    protected int $issue_id;
+    protected int $note_id;
     protected int $user_id;
-    protected Issue $issue;
+    protected DiscussionTopic $discussion_topic;
+    
     protected User $user;
     
     public function user()
     {
         return $this->hasOne(User::class, 'user_id');
     }
-    public function issue()
+    public function discussion_topic()
     {
-        return $this->hasOne(Issue::class, 'issue_id');
+        return $this->hasOne(DiscussionTopic::class, 'topic_id');
     }
 }

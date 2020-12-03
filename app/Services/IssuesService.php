@@ -107,6 +107,7 @@ class IssuesService
         $newRecord->issue_id = $issue_id;
         $newRecord->description = $actionModel->description;
         $newRecord->date = $actionModel->date;
+        $newRecord->user_id = $user->id;
         $newRecord->save();
 
         $response->followed_up_issue = $newRecord;

@@ -14,8 +14,8 @@ class SetNoteIdAsUniqueInActionTable extends Migration
      */
     public function up()
     {
-        Schema::table('action', function (Blueprint $table) {
-            DB::statement('ALTER TABLE kafila_console.actions ADD CONSTRAINT actions_un UNIQUE KEY (note_id)');
+        Schema::table('actions', function (Blueprint $table) {
+            DB::statement('ALTER TABLE actions ADD CONSTRAINT actions_un UNIQUE KEY (note_id)');
         });
     }
 
