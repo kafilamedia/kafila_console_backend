@@ -8,18 +8,18 @@ use Throwable;
 
 class RestStakeHolderManagementController extends BaseRestController
 {
-    private MasterDataService $stakeHolderManagementService;
+    private MasterDataService $masterDataService;
 
-    public function __construct(MasterDataService $stakeHolderManagementService)
+    public function __construct(MasterDataService $masterDataService)
     {
-        $this->stakeHolderManagementService = $stakeHolderManagementService;
+        $this->masterDataService = $masterDataService;
     }
 
     public function list(Request $request)
     {
         try {
             $payload = parent::getWebRequest($request);
-            $response = $this->stakeHolderManagementService->list($payload);
+            $response = $this->masterDataService->list($payload);
 
             return parent::jsonResponse($response);
         } catch (Throwable $th) {
@@ -30,7 +30,7 @@ class RestStakeHolderManagementController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            $response = $this->stakeHolderManagementService->store($payload, $request);
+            $response = $this->masterDataService->store($payload, $request);
 
             return parent::jsonResponse($response);
         } catch (Throwable $th) {
@@ -41,7 +41,7 @@ class RestStakeHolderManagementController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            $response = $this->stakeHolderManagementService->view($payload, $id);
+            $response = $this->masterDataService->view($payload, $id);
 
             return parent::jsonResponse($response);
         } catch (Throwable $th) {
@@ -52,7 +52,7 @@ class RestStakeHolderManagementController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            $response = $this->stakeHolderManagementService->delete($payload, $id);
+            $response = $this->masterDataService->delete($payload, $id);
 
             return parent::jsonResponse($response);
         } catch (Throwable $th) {

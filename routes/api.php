@@ -46,6 +46,13 @@ Route:: group(['prefix' => 'issues' , 'middleware'=>'auth:api'  ], function () {
     Route::post('delete/{id}', 'Rest\RestIssuesController@delete');
     Route::post('followup', 'Rest\RestIssuesController@storeAction');
 });
+Route:: group(['prefix' => 'discussiontopics' , 'middleware'=>'auth:api'  ], function () {
+    Route::post('list', 'Rest\RestDiscussionTopicController@list');
+    Route::post('store', 'Rest\RestDiscussionTopicController@store');
+    Route::post('view/{id}', 'Rest\RestDiscussionTopicController@view');
+    // Route::post('delete', 'Rest\RestMeetingNotesController@destroy');
+    Route::post('action', 'Rest\RestDiscussionTopicController@storeAction');
+});
 
 Route:: group(['prefix' => 'action' , 'middleware'=>'auth:api'  ], function () {
     Route::post('store', 'Rest\RestMeetingNotesController@storeAction');

@@ -5,6 +5,7 @@ use App\Dto\Filter;
 use App\Dto\WebRequest;
 use App\Dto\WebResponse;
 use App\Models\Departement;
+use App\Models\DiscussionTopic;
 use App\Models\Issue;
 use App\Models\MeetingNote;
 use App\Models\User;
@@ -43,6 +44,9 @@ class MasterDataService
                 break;
             case 'meeting_note':
                 $list = $this->getMeetingNoteList($request->filter, $request->user);
+                break;
+            case 'discussion_topic':
+                $list = $this->getDiscussionTopicList($request->filter, $request->user);
                 break;
             case 'issue':
                 $list = $this->getIssueList($request->filter, $request->user);
@@ -93,6 +97,13 @@ class MasterDataService
                 if (sizeof($result) > 0) {
                     $response->meeting_note = $result[0];
                     $list = [$response->meeting_note];
+                }
+                break;
+            case 'meeting_note':
+                $result = $this->getDiscussionTopicList($request->filter, $request->user, $id)['list'];
+                if (sizeof($result) > 0) {
+                    $response->discussion_topic = $result[0];
+                    $list = [$response->discussion_topic];
                 }
                 break;
             case 'issue':
@@ -146,6 +157,9 @@ class MasterDataService
             case 'meeting_note':
                 $response->meeting_note = $this->storeMeetingNote($request->meeting_note, $httpRequest->user());
                 break;
+            case 'discussion_topic':
+                $response->meeting_note = $this->storeDiscussionTopic($request->discussion_topic, $httpRequest->user());
+                break;
             case 'issue':
                 $response->issue = $this->storeIssue($request->issue, $httpRequest->user());
                 break;
@@ -186,6 +200,35 @@ class MasterDataService
         $model->save();
         return $model;
     }
+
+    public function storeDiscussionTopic(DiscussionTopic $requesModel, User $user) : DiscussionTopic
+    {
+        $model = new DiscussionTopic();
+        $existing = null;
+        if (!is_null($requesModel->id)) {
+            $existing = DiscussionTopic::find($requesModel->id);
+            if (!is_null($existing)) {
+                $model = $existing;
+            } else {
+                throw new Exception("existing data Not Found");
+            }
+        }
+        if (is_null($existing)) {
+            //if new record, enable to fills these values
+            $model->user_id = $user->id;
+            $model->date = $requesModel->date;
+            $model->deadline_date = $requesModel->deadline_date;
+            $model->departement_id = $user->departement_id;
+            $model->person_in_charge = $requesModel->person_in_charge;
+        }
+        //
+        $model->content = $requesModel->content;
+        $model->decision = $requesModel->decision;
+
+        $model->save();
+        return $model;
+    }
+
 
     public function storeDepartement(Departement $requesModel) : Departement
     {
@@ -297,9 +340,11 @@ class MasterDataService
         ->leftJoin('departements', 'departements.id', '=', 'meeting_notes.departement_id')
         ->leftJoin('users', 'users.id', '=', 'meeting_notes.user_id');
         
+        $meeting_note_select_fields = QueryUtil::setFillableSelect(new MeetingNote());
+        //foreign
         $departement_select_fields = QueryUtil::setFillableSelect(new Departement(), true, 'departement');
         $user_select_fields = QueryUtil::setFillableSelect(new User(), true, 'user');
-        $meeting_note_select_fields = QueryUtil::setFillableSelect(new MeetingNote());
+        
         $select_array = array_merge($user_select_fields, $departement_select_fields, $meeting_note_select_fields);
         
         $query->select('meeting_notes.id as id', ... $select_array);
@@ -326,12 +371,9 @@ class MasterDataService
             
             QueryUtil::setLimitOffsetOrder($query, $filter);
         } else {
-            
             $query->where('meeting_notes.id', $id);
         }
 
-        
-        
         $list = $query->get();
         return [
             'list'=>QueryUtil::rowMappedList($list, new MeetingNote()),
@@ -372,9 +414,10 @@ class MasterDataService
         $query =  DB::table('issues')
         ->leftJoin('departements', 'departements.id', '=', 'issues.departement_id');
         
+        $meeting_note_select_fields = QueryUtil::setFillableSelect(new Issue());
+        //foreign
         $departement_select_fields = QueryUtil::setFillableSelect(new Departement(), true, 'departement');
         
-        $meeting_note_select_fields = QueryUtil::setFillableSelect(new Issue());
         $select_array = array_merge($departement_select_fields, $meeting_note_select_fields);
         
         $query->select('issues.id as id', ... $select_array);
@@ -401,11 +444,56 @@ class MasterDataService
             $query->where('issues.id', $id);
         }
 
-        
-        
         $list = $query->get();
         return [
             'list'=>QueryUtil::rowMappedList($list, new Issue()),
+            'count'=>$count
+        ];
+    }
+
+    public function getDiscussionTopicList(Filter $filter, User $user, $id = null) : array
+    {
+        
+        $query =  DB::table('discussion_topics')
+        ->leftJoin('departements', 'departements.id', '=', 'discussion_topics.departement_id')
+        ->leftJoin('users', 'users.id', '=', 'discussion_topics.user_id');
+
+        $discussion_topics_select_fields = QueryUtil::setFillableSelect(new DiscussionTopic());
+        //foreign
+        $departement_select_fields = QueryUtil::setFillableSelect(new Departement(), true, 'departement');
+        $user_select_fields = QueryUtil::setFillableSelect(new User(), true, 'user');
+
+        $select_array = array_merge($user_select_fields, $departement_select_fields, $discussion_topics_select_fields);
+        
+        $query->select('discussion_topics.id as id', ... $select_array);
+        if (!$user->isAdmin()) {
+            $query->where('departements.id', $user->departement_id);
+        }
+        
+        $count = 0;
+        if (is_null($id)) {
+            // if (isset($filter->fieldsFilter['departement'])) {
+            //     $query->where('departements.name', 'like', '%'.$filter->fieldsFilter['departement'].'%');
+            // }
+            $filter = ObjectUtil::adjustFieldFilter(new DiscussionTopic(), $filter);
+            QueryUtil::setFilter($query, $filter);
+            $countQuery = clone $query;
+            $count = $countQuery->count('discussion_topics.id');
+            
+            if ($filter->orderBy == "departement") {
+                $filter->orderBy = "departements.name";
+            }
+            if ($filter->orderBy == "user") {
+                $filter->orderBy = "users.name";
+            }
+            
+            QueryUtil::setLimitOffsetOrder($query, $filter);
+        } else {
+            $query->where('discussion_topics.id', $id);
+        }
+        $list = $query->get();
+        return [
+            'list'=>QueryUtil::rowMappedList($list, new DiscussionTopic()),
             'count'=>$count
         ];
     }

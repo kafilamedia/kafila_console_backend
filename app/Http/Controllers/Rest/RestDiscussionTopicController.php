@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\Rest;
 
-use App\Services\MeetingNoteService;
+use App\Services\DiscussionTopicService;
 use Illuminate\Http\Request;
 
-class RestMeetingNotesController extends BaseRestController
+class RestDiscussionTopicController extends BaseRestController
 {
-    private MeetingNoteService $meetingNoteService;
+    private DiscussionTopicService $discussionTopicService;
 
-    public function __construct(MeetingNoteService $meetingNoteService)
+    public function __construct(DiscussionTopicService $discussionTopicService)
     {
-        $this->meetingNoteService = $meetingNoteService;
+        $this->discussionTopicService = $discussionTopicService;
     }
     public function list(Request $request)
     {
         try {
             $payload = parent::getWebRequest($request);
-            $response = $this->meetingNoteService->list($payload, $request->user());
+            $response = $this->discussionTopicService->list($payload, $request->user());
             return parent::jsonResponse($response);
         } catch (\Throwable $th) {
             return parent::errorResponse($th);
@@ -27,7 +27,7 @@ class RestMeetingNotesController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            $response = $this->meetingNoteService->storeMeetingNote($payload, $request->user());
+            $response = $this->discussionTopicService->storeDiscussionTopic($payload, $request->user());
             return parent::jsonResponse($response);
         } catch (\Throwable $th) {
             return parent::errorResponse($th);
@@ -36,7 +36,7 @@ class RestMeetingNotesController extends BaseRestController
     public function view(Request $request, $id)
     {
         try {
-            $response = $this->meetingNoteService->view($id, $request->user());
+            $response = $this->discussionTopicService->view($id, $request->user());
             return parent::jsonResponse($response);
         } catch (\Throwable $th) {
             return parent::errorResponse($th);
@@ -47,7 +47,7 @@ class RestMeetingNotesController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            $response = $this->meetingNoteService->createAction($payload, $request->user());
+            $response = $this->discussionTopicService->createAction($payload, $request->user());
             return parent::jsonResponse($response);
         } catch (\Throwable $th) {
             return parent::errorResponse($th);
@@ -58,7 +58,7 @@ class RestMeetingNotesController extends BaseRestController
     {
         try {
             $payload = parent::getWebRequest($request);
-            $response = $this->meetingNoteService->resetAction($payload, $request->user());
+            $response = $this->discussionTopicService->resetAction($payload, $request->user());
             return parent::jsonResponse($response);
         } catch (\Throwable $th) {
             return parent::errorResponse($th);

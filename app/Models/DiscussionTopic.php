@@ -25,7 +25,7 @@ class DiscussionTopic extends BaseModel
     protected Departement $departement;
 
     //not column
-    protected ?MeetingAction $action = null;
+    protected ?DiscussionAction $action = null;
     protected ?bool $is_closed;
 
     public function __construct()
