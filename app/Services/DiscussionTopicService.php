@@ -103,7 +103,7 @@ class DiscussionTopicService
         $newRecord->user_id = $user->id;
         $newRecord->save();
 
-        $response->action = $newRecord;
+        $response->discussion_action = $newRecord;
         return $response;
     }
 
