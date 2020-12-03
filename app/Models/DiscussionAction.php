@@ -17,7 +17,7 @@ class DiscussionAction extends Model
     protected int $id;
     protected string $description;
     protected $date;
-    protected int $note_id;
+    protected int $topic_id;
     protected int $user_id;
     protected DiscussionTopic $discussion_topic;
     

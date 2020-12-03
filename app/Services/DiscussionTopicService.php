@@ -84,7 +84,7 @@ class DiscussionTopicService
         $discussion_topic_id = $actionModel->topic_id;
         $discussion_topic = DiscussionTopic::find($discussion_topic_id);
         if (is_null($discussion_topic)) {
-            throw new Exception("Corresponding meeting note invalid");
+            throw new Exception("Corresponding discussion topics invalid: ".$discussion_topic_id);
         }
         if (!$user->isAdmin()) {
             if ($discussion_topic->departement_id != $user->departement_id) {
