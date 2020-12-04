@@ -56,6 +56,7 @@ class ObjectUtil
     public static function arraytoobj($obj, $arr)
     {
         $reflectionClass = new ReflectionClass($obj);
+        
         foreach ($arr as $key => $value) {
             if ($reflectionClass->hasProperty($key) && !is_null($value)) {
                 $prop = $reflectionClass->getProperty($key);
@@ -65,8 +66,8 @@ class ObjectUtil
 
                 if ($isCustomObject) {
                     out("==========>" . $propName);
-                    $propName = str_replace("Models\\Models", "Models", $propName);
-                    $obj->$key = ObjectUtil::arraytoobj(new $propName() , $value);
+                    // $propName = str_replace("Models\\Models", "Models", $propName);
+                    $obj->$key = ObjectUtil::arraytoobj(new $propName(), $value);
                 } else {
                     $obj->$key = $value;
                 }

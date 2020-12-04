@@ -51,11 +51,22 @@ class QueryUtil
             }
         }
         //TODO: improve
+        //leftJoins is array of associative array
+        
         foreach ($leftJoins as $key => $value) {
             try {
-                $obj->$key = $value;
+                $propClassName = null;
+                $final_value = null;
+                if ($reflectionClass->hasProperty($key)) {
+                    $prop = $reflectionClass->getProperty($key);
+                    $propClassName = ObjectUtil::getPropName($prop);
+                    // dd($propClassName);
+                    $final_value = ObjectUtil::arraytoobj(new $propClassName(), $value);
+                }
+                $obj->{$key} =  $final_value;
             } catch (Throwable $th) {
-                $obj->$key = null;
+                // throw $th;
+                $obj->$key = null;//$th->getMessage();
             }
         }
         // $obj->raw = $rowData;

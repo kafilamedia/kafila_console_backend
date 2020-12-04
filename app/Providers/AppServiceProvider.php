@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Services\AccountService;
+use App\Services\DiscussionTopicService;
 use App\Services\IssuesService;
 use App\Services\MeetingNoteService;
 use App\Services\MasterDataService;
@@ -20,8 +21,10 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         $accountService = new AccountService();
+        
         $stakeHolderManagementService = new MasterDataService($accountService);
-        $meetingNoteService = new MeetingNoteService($stakeHolderManagementService);
+        $discussionTopicService = new DiscussionTopicService($stakeHolderManagementService);
+        $meetingNoteService = new MeetingNoteService($stakeHolderManagementService, $discussionTopicService);
         $issuesService = new IssuesService($stakeHolderManagementService);
 
         $this->app->bind(AccountService::class, function ($app) use ($accountService) {
@@ -32,6 +35,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(MeetingNoteService::class, function ($app) use ($meetingNoteService) {
             return $meetingNoteService;
+        });
+        $this->app->bind(DiscussionTopicService::class, function ($app) use ($discussionTopicService) {
+            return $discussionTopicService;
         });
         $this->app->bind(IssuesService::class, function ($app) use ($issuesService) {
             return $issuesService;

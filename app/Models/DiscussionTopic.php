@@ -10,6 +10,7 @@ class DiscussionTopic extends BaseModel
         'deadline_date',
         'person_in_charge',
         'user_id','departement_id',
+        'note_id'
     ];
 
     protected int $id;
@@ -18,11 +19,13 @@ class DiscussionTopic extends BaseModel
     protected string $decision;
     protected $deadline_date;
     protected int $user_id;
+    protected int $note_id;
     protected int $departement_id;
     protected string $person_in_charge;
 
     protected User $user;
     protected Departement $departement;
+    protected MeetingNote $meeting_note;
 
     //not column
     protected ?DiscussionAction $action = null;
@@ -42,5 +45,9 @@ class DiscussionTopic extends BaseModel
     public function department()
     {
         return $this->hasOne(Departement::class, 'departement_id');
+    }
+    public function meeting_note()
+    {
+        return $this->hasOne(MeetingNote::class, 'note_id');
     }
 }

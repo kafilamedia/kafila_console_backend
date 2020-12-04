@@ -6,24 +6,20 @@ class MeetingNote extends BaseModel
 {
     //
     protected $fillable = [
-        'date','content','decision',
-        'deadline_date','place',
-        'person_in_charge',
+        'date','place',
+        // 'person_in_charge',
         'user_id','departement_id',
     ];
 
     protected int $id;
     protected $date;
-    protected string $content;
-    protected string $decision;
     protected string $place;
-    protected $deadline_date;
     protected int $user_id;
     protected int $departement_id;
-    protected string $person_in_charge;
 
     protected User $user;
     protected Departement $departement;
+    protected $discussion_topics = [];
 
     //not column
     protected ?MeetingAction $action = null;
@@ -36,12 +32,12 @@ class MeetingNote extends BaseModel
         parent::addFilterableAlias('user', 'users.name');
     }
 
-    public function user()
-    {
-        return $this->hasOne(User::class, 'user_id');
-    }
-    public function department()
-    {
-        return $this->hasOne(Departement::class, 'departement_id');
-    }
+    // public function user()
+    // {
+    //     return $this->hasOne(User::class, 'user_id');
+    // }
+    // public function department()
+    // {
+    //     return $this->hasOne(Departement::class, 'departement_id');
+    // }
 }
