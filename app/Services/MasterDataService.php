@@ -196,8 +196,10 @@ class MasterDataService
         //
         $model->content = $requesModel->content;
         $model->decision = $requesModel->decision;
-
         $model->save();
+
+        $departement = Departement::find($user->departement_id);
+        $model->departement = $departement;
         return $model;
     }
 
@@ -213,6 +215,7 @@ class MasterDataService
                 throw new Exception("existing data Not Found");
             }
         }
+        
         if (is_null($existing)) {
             //if new record, enable to fills these values
             $model->user_id = $user->id;
@@ -226,6 +229,9 @@ class MasterDataService
         $model->decision = $requesModel->decision;
 
         $model->save();
+        
+        $departement = Departement::find($user->departement_id);
+        $model->departement = $departement;
         return $model;
     }
 
@@ -291,6 +297,8 @@ class MasterDataService
         $model->departement_id = $requesModel->departement_id;
 
         $model->save();
+        $departement = Departement::find($requesModel->departement_id);
+        $model->departement = $departement;
         return $model;
     }
 
