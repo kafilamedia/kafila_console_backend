@@ -223,7 +223,7 @@ class MasterDataService
             $model->user_id = $user->id;
             $model->date = $meeting_note->date; //date is same as meeting note
             $model->deadline_date = $requesModel->deadline_date;
-            $model->departement_id = $user->departement_id;
+            $model->departement_id = $meeting_note->departement_id;
             $model->note_id = $requesModel->note_id;
             $model->person_in_charge = $requesModel->person_in_charge;
         }

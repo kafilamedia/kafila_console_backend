@@ -156,4 +156,14 @@ class ObjectUtil
         return $property->getValue($obj);
       }
 
+    public static function collectionToPlainArray(Collection $collection) : array
+    {
+        $array = [];
+
+        foreach ($collection as $item) {
+            array_push($array, $item);
+        }
+        return $array;
+    }
+
 }

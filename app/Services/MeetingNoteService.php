@@ -65,16 +65,17 @@ class MeetingNoteService
 
         $topic_ids = $this->pluckIdAsArray($discussion_topics->toArray());
         $discussion_actions = DiscussionAction::whereIn('topic_id', $topic_ids)->get();
+        foreach ($discussion_topics as $discussion_topic) {
+            $action = $discussion_actions->where('topic_id', $discussion_topic->id)->first();
+            $discussion_topic->action = $action;
+            $discussion_topic->is_closed = is_null($action) == false;
+        }
+        
         //check if closed
         foreach ($records as $record) {
             try {
-                $discussion_topics_array = $discussion_topics->where('note_id', $record->id)->toArray();
-                foreach ($discussion_topics as $discussion_topic) {
-                    $action = $discussion_actions->where('topic_id', $discussion_topic->id)->first();
-                    $discussion_topic->action = $action;
-                    $discussion_topic->is_closed = is_null($action) == false;
-                }
-                $record->discussion_topics = $discussion_topics_array;
+                $discussion_topics_filtered = $discussion_topics->where('note_id', $record->id);
+                $record->discussion_topics = ObjectUtil::collectionToPlainArray($discussion_topics_filtered);
             } catch (\Throwable $th) {
                 $record->discussion_topics = [];
             }
@@ -86,6 +87,7 @@ class MeetingNoteService
         $response->filter = MasterDataService::adjustFilterKey($filter);
         return $response;
     }
+    
     public function view($id, User $user) : WebResponse
     {
         $filter = new Filter();
