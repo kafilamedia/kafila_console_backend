@@ -34,12 +34,16 @@ class DiscussionTopicService
         $result = $this->masterDataService->getDiscussionTopicList($filter, $user);
         $records = $result['list'];
 
+        $topic_ids = MeetingNoteService::pluckIdAsArray($records);
+        $discussion_actions = DiscussionAction::whereIn('topic_id', $topic_ids)->get();
+        
         //check if closed
         foreach ($records as $record) {
             try {
-                $action = DiscussionAction::where('topic_id', $record->id)->first();
+                $action = $discussion_actions->where('topic_id', $record->id)->first();
                 if (!is_null($action)) {
                     $record->is_closed = true;
+                    $record->action = $action;
                 } else {
                     $record->is_closed = false;
                 }
