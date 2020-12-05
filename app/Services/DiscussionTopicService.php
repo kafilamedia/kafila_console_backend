@@ -43,7 +43,8 @@ class DiscussionTopicService
                 $action = $discussion_actions->where('topic_id', $record->id)->first();
                 if (!is_null($action)) {
                     $record->is_closed = true;
-                    $record->action = $action;
+                    // $record->action = $action;
+                    $record->closed_date = $action->date;
                 } else {
                     $record->is_closed = false;
                 }

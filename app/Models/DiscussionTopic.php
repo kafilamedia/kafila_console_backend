@@ -30,6 +30,7 @@ class DiscussionTopic extends BaseModel
     //not column
     protected ?DiscussionAction $action = null;
     protected ?bool $is_closed;
+    protected $closed_date;
 
     public function __construct()
     {
