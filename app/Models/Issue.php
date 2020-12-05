@@ -22,6 +22,7 @@ class Issue extends BaseModel
     //not column
     protected ?FollowedUpIssue $follow_up = null;
     protected ?bool $is_closed;
+    protected $closed_date;
 
     public function __construct()
     {

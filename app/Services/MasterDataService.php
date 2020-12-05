@@ -395,9 +395,7 @@ class MasterDataService
     public function getDepartementList(WebRequest $request, $id = null) : array
     {
         $query =  DB::table('departements');
-        
         $departement_select_fields = QueryUtil::setFillableSelect(new Departement());
-        
         $query->select('departements.id as id', ... $departement_select_fields);
 
         $count = 0;
@@ -423,13 +421,19 @@ class MasterDataService
     {
         
         $query =  DB::table('issues')
-        ->leftJoin('departements', 'departements.id', '=', 'issues.departement_id');
+        ->leftJoin('departements', 'departements.id', '=', 'issues.departement_id')
+        ->leftJoin('followed_up_issues', 'followed_up_issues.issue_id', '=', 'issues.id');
         
-        $meeting_note_select_fields = QueryUtil::setFillableSelect(new Issue());
+        $issue_select_fields = QueryUtil::setFillableSelect(new Issue());
         //foreign
         $departement_select_fields = QueryUtil::setFillableSelect(new Departement(), true, 'departement');
         
-        $select_array = array_merge($departement_select_fields, $meeting_note_select_fields);
+        $action_related_fields = [
+            'followed_up_issues.date as closed_date',
+            DB::raw('(select count(*) from followed_up_issues where followed_up_issues.issue_id = issues.id > 0) as is_closed')
+        ];
+
+        $select_array = array_merge($departement_select_fields, $action_related_fields, $issue_select_fields);
         
         $query->select('issues.id as id', ... $select_array);
         if (!$user->isAdmin()) {
@@ -467,14 +471,20 @@ class MasterDataService
         
         $query =  DB::table('discussion_topics')
         ->leftJoin('departements', 'departements.id', '=', 'discussion_topics.departement_id')
-        ->leftJoin('users', 'users.id', '=', 'discussion_topics.user_id');
+        ->leftJoin('users', 'users.id', '=', 'discussion_topics.user_id')
+        ->leftJoin('discussion_actions', 'discussion_actions.topic_id', '=', 'discussion_topics.id');
 
         $discussion_topics_select_fields = QueryUtil::setFillableSelect(new DiscussionTopic());
         //foreign
         $departement_select_fields = QueryUtil::setFillableSelect(new Departement(), true, 'departement');
         $user_select_fields = QueryUtil::setFillableSelect(new User(), true, 'user');
 
-        $select_array = array_merge($user_select_fields, $departement_select_fields, $discussion_topics_select_fields);
+        $action_related_fields = [
+            'discussion_actions.date as closed_date',
+            DB::raw('(select count(*) from discussion_actions where discussion_actions.topic_id = discussion_topics.id) as is_closed'),
+        ];
+
+        $select_array = array_merge($user_select_fields, $action_related_fields, $departement_select_fields, $discussion_topics_select_fields);
         
         $query->select('discussion_topics.id as id', ... $select_array);
         if (!$user->isAdmin()) {

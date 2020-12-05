@@ -33,27 +33,6 @@ class DiscussionTopicService
         $filter = is_null($webRequest->filter)? new Filter(): $webRequest->filter;
         $result = $this->masterDataService->getDiscussionTopicList($filter, $user);
         $records = $result['list'];
-
-        $topic_ids = MeetingNoteService::pluckIdAsArray($records);
-        $discussion_actions = DiscussionAction::whereIn('topic_id', $topic_ids)->get();
-        
-        //check if closed
-        foreach ($records as $record) {
-            try {
-                $action = $discussion_actions->where('topic_id', $record->id)->first();
-                if (!is_null($action)) {
-                    $record->is_closed = true;
-                    // $record->action = $action;
-                    $record->closed_date = $action->date;
-                } else {
-                    $record->is_closed = false;
-                }
-            } catch (\Throwable $th) {
-                // throw $th;
-                $record->is_closed = false;
-            }
-        }
-
         $response = new WebResponse();
         $response->result_list = $records;
         $response->count = $result['count'];

@@ -34,22 +34,6 @@ class IssuesService
         $filter = is_null($webRequest->filter)? new Filter(): $webRequest->filter;
         $result = $this->stakeHolderManagementService->getIssueList($filter, $user);
         $records = $result['list'];
-
-        //check if closed
-        foreach ($records as $record) {
-            try {
-                $action = FollowedUpIssue::where('issue_id', $record->id)->first();
-                if (!is_null($action)) {
-                    $record->is_closed = true;
-                } else {
-                    $record->is_closed = false;
-                }
-            } catch (\Throwable $th) {
-                // throw $th;
-                $record->is_closed = false;
-            }
-        }
-
         $response = new WebResponse();
         $response->result_list = $records;
         $response->count = $result['count'];
