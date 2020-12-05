@@ -23,7 +23,8 @@ class MeetingNote extends BaseModel
 
     //not column
     protected ?MeetingAction $action = null;
-    protected ?bool $is_closed;
+    protected int $discussion_topics_count = 0;
+    protected int $discussion_topics_closed_count = 0;
 
     public function __construct()
     {
@@ -32,12 +33,12 @@ class MeetingNote extends BaseModel
         parent::addFilterableAlias('user', 'users.name');
     }
 
-    // public function user()
-    // {
-    //     return $this->hasOne(User::class, 'user_id');
-    // }
-    // public function department()
-    // {
-    //     return $this->hasOne(Departement::class, 'departement_id');
-    // }
+    public function user()
+    {
+        return $this->hasOne(User::class, 'user_id');
+    }
+    public function department()
+    {
+        return $this->hasOne(Departement::class, 'departement_id');
+    }
 }

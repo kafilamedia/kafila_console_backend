@@ -75,9 +75,10 @@ class MeetingNoteService
         foreach ($records as $record) {
             try {
                 $discussion_topics_filtered = $discussion_topics->where('note_id', $record->id);
-                $record->discussion_topics = ObjectUtil::collectionToPlainArray($discussion_topics_filtered);
+                $closed_count = $discussion_topics_filtered->where('is_closed', 1)->count();
+                $record->discussion_topics_count = $discussion_topics_filtered->count();
+                $record->discussion_topics_closed_count = $closed_count;
             } catch (\Throwable $th) {
-                $record->discussion_topics = [];
             }
         }
 

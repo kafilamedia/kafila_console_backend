@@ -22,7 +22,7 @@ class QueryUtil
             $item = $collection[$i];
             $obj_cloned = clone $obj;
             $mapped = QueryUtil::rowMapped($obj_cloned, $item);
-            ($mappedList[$i] = $mapped);
+            array_push($mappedList, $mapped);
         }
         
         return $mappedList;
