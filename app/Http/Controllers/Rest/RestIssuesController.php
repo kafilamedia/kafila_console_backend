@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Rest;
 
 use App\Dto\WebResponse;
 use App\Http\Controllers\Controller;
+use App\Models\Departement;
 use App\Services\IssuesService;
 use Exception;
 use Illuminate\Http\Request;
@@ -76,6 +77,21 @@ class RestIssuesController extends BaseRestController
         try {
             $payload = parent::getWebRequest($request);
             $response = $this->issueService->resetAction($payload, $request->user());
+            return parent::jsonResponse($response);
+        } catch (\Throwable $th) {
+            return parent::errorResponse($th);
+        }
+    }
+
+
+
+    // =================== PUBLIC ================
+
+    public function departementList(Request $request)
+    {
+        try {
+            $response = new WebResponse();
+            $response->result_list = Departement::all()->toArray();
             return parent::jsonResponse($response);
         } catch (\Throwable $th) {
             return parent::errorResponse($th);

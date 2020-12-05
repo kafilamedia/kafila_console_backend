@@ -65,3 +65,11 @@ Route:: group(['prefix' => 'masterdata' , 'middleware'=>['auth:api', 'role:admin
     Route::post('delete/{id}', 'Rest\RestStakeHolderManagementController@delete');
     Route::post('resetpassword', 'Rest\RestAccountController@resetUserPassword');
 });
+
+
+
+
+////////// public /////////////
+Route:: group(['prefix' => 'public/issues' ], function () {
+    Route::post('departements', 'Rest\RestIssuesController@departementList');
+});
