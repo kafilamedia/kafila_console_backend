@@ -97,4 +97,14 @@ class RestIssuesController extends BaseRestController
             return parent::errorResponse($th);
         }
     }
+    public function storePublicIssue(Request $request)
+    {
+        try {
+            $payload = parent::getWebRequest($request);
+            $response = $this->issueService->storePublicIssue($payload);
+            return parent::jsonResponse($response);
+        } catch (\Throwable $th) {
+            return parent::errorResponse($th);
+        }
+    }
 }

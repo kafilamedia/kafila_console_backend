@@ -119,4 +119,17 @@ class IssuesService
         }
         return $response;
     }
+
+    public function storePublicIssue(WebRequest $request) : WebResponse
+    {
+        $issue = $request->issue;
+        $issue->issue_input = "Website";
+        if (null == $issue->email || "" == $issue->email) {
+            $issue->email = "ANONIM";
+        }
+        $issue->save();
+        $response = new WebResponse();
+        $response->issue = $issue;
+        return $response;
+    }
 }

@@ -71,5 +71,6 @@ Route:: group(['prefix' => 'masterdata' , 'middleware'=>['auth:api', 'role:admin
 
 ////////// public /////////////
 Route:: group(['prefix' => 'public/issues' ], function () {
+    Route::post('store', 'Rest\RestIssuesController@storePublicIssue');
     Route::post('departements', 'Rest\RestIssuesController@departementList');
 });
