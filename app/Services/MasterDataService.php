@@ -140,6 +140,7 @@ class MasterDataService
             throw new Exception("Existing Data Not Found");
         }
         $existing->delete();
+        $response->record_id = $id;
         return $response;
     }
 

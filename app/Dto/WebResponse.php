@@ -18,21 +18,20 @@ class WebResponse
     public ?string $message = "success";
     public $date;
     public ?User $user;
-
-    public Departement $departement;
+    public ?Departement $departement;
     
-    public MeetingAction $action;
-    public MeetingNote $meeting_note;
+    public ?MeetingAction $action;
+    public ?MeetingNote $meeting_note;
 
-    public FollowedUpIssue $followed_up_issue;
-    public Issue $issue;
+    public ?FollowedUpIssue $followed_up_issue;
+    public ?Issue $issue;
 
-    public DiscussionTopic $discussion_topic;
-    public DiscussionAction $discussion_action;
+    public ?DiscussionTopic $discussion_topic;
+    public ?DiscussionAction $discussion_action;
     
     public array $result_list;
     public int $count = 0;
-
+    public $record_id;
     public ?Filter $filter = null;
 
     public function __construct()
