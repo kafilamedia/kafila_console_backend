@@ -33,6 +33,7 @@ class WebResponse
     public int $count = 0;
     public $record_id;
     public ?Filter $filter = null;
+    public ?Statistic $statistic;
 
     public function __construct()
     {

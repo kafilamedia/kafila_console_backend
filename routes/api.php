@@ -26,6 +26,9 @@ Route::prefix('account')->group(function () {
     Route::post('requestid', 'Rest\RestAccountController@requestId')->name('requestid');
     Route::get('requestid', 'Rest\RestAccountController@requestId')->name('requestid');
 });
+Route:: group(['prefix' => 'histories' , 'middleware'=>'auth:api'  ], function () {
+    Route::post('statistic', 'Rest\RestHistoriesController@statistic');
+});
 Route:: group(['prefix' => 'accountdashboard' , 'middleware'=>'auth:api'  ], function () {
     Route::post('user', 'Rest\RestAccountDashboardController@getUser');
     Route::post('logout', 'Rest\RestAccountController@logout');

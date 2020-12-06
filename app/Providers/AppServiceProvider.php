@@ -7,6 +7,7 @@ use App\Services\DiscussionTopicService;
 use App\Services\IssuesService;
 use App\Services\MeetingNoteService;
 use App\Services\MasterDataService;
+use App\Services\RecordHistoriesService;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,16 +23,17 @@ class AppServiceProvider extends ServiceProvider
         //
         $accountService = new AccountService();
         
-        $stakeHolderManagementService = new MasterDataService($accountService);
-        $discussionTopicService = new DiscussionTopicService($stakeHolderManagementService);
-        $meetingNoteService = new MeetingNoteService($stakeHolderManagementService, $discussionTopicService);
-        $issuesService = new IssuesService($stakeHolderManagementService);
+        $masterDataService = new MasterDataService($accountService);
+        $discussionTopicService = new DiscussionTopicService($masterDataService);
+        $meetingNoteService = new MeetingNoteService($masterDataService, $discussionTopicService);
+        $issuesService = new IssuesService($masterDataService);
+        $recordHistoryService = new RecordHistoriesService($masterDataService);
 
         $this->app->bind(AccountService::class, function ($app) use ($accountService) {
             return $accountService;
         });
-        $this->app->bind(MasterDataService::class, function ($app) use ($stakeHolderManagementService) {
-            return $stakeHolderManagementService;
+        $this->app->bind(MasterDataService::class, function ($app) use ($masterDataService) {
+            return $masterDataService;
         });
         $this->app->bind(MeetingNoteService::class, function ($app) use ($meetingNoteService) {
             return $meetingNoteService;
@@ -41,6 +43,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(IssuesService::class, function ($app) use ($issuesService) {
             return $issuesService;
+        });
+        $this->app->bind(RecordHistoriesService::class, function ($app) use ($recordHistoryService) {
+            return $recordHistoryService;
         });
     }
 
