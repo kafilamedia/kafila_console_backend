@@ -56,32 +56,10 @@ class MeetingNoteService
     public function list(WebRequest $webRequest, User $user) : WebResponse
     {
         $filter = is_null($webRequest->filter)? new Filter(): $webRequest->filter;
+        $filter->withDetail = true;
+        
         $result = $this->stakeHolderManagementService->getMeetingNoteList($filter, $user);
         $records = $result['list'];
-
-        $note_ids = $this->pluckIdAsArray($records);
-        
-        $discussion_topics = DiscussionTopic::whereIn('note_id', $note_ids)->get();
-
-        $topic_ids = $this->pluckIdAsArray($discussion_topics->toArray());
-        $discussion_actions = DiscussionAction::whereIn('topic_id', $topic_ids)->get();
-        foreach ($discussion_topics as $discussion_topic) {
-            $action = $discussion_actions->where('topic_id', $discussion_topic->id)->first();
-            $discussion_topic->action = $action;
-            $discussion_topic->is_closed = is_null($action) == false;
-        }
-        
-        //check if closed
-        foreach ($records as $record) {
-            try {
-                $discussion_topics_filtered = $discussion_topics->where('note_id', $record->id);
-                $closed_count = $discussion_topics_filtered->where('is_closed', 1)->count();
-                $record->discussion_topics_count = $discussion_topics_filtered->count();
-                $record->discussion_topics_closed_count = $closed_count;
-            } catch (\Throwable $th) {
-            }
-        }
-
         $response = new WebResponse();
         $response->result_list = $records;
         $response->count = $result['count'];

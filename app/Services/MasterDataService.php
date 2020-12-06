@@ -355,8 +355,21 @@ class MasterDataService
         //foreign
         $departement_select_fields = QueryUtil::setFillableSelect(new Departement(), true, 'departement');
         $user_select_fields = QueryUtil::setFillableSelect(new User(), true, 'user');
+
+        $closed_topic_select_fields = [];
+
+        if ($filter->withDetail) {
+            $closed_topic_select_fields = [
+                DB::raw('(select count(*) from discussion_topics where discussion_topics.note_id = meeting_notes.id) 
+                    as discussion_topics_count'),
+                DB::raw('(select count(*) from discussion_actions 
+                    left join discussion_topics on discussion_actions.topic_id = discussion_topics.id
+                    where discussion_topics.note_id = meeting_notes.id) 
+                    as discussion_topics_closed_count')
+            ];
+        }
         
-        $select_array = array_merge($user_select_fields, $departement_select_fields, $meeting_note_select_fields);
+        $select_array = array_merge($user_select_fields, $closed_topic_select_fields, $departement_select_fields, $meeting_note_select_fields);
         
         $query->select('meeting_notes.id as id', ... $select_array);
         if (!$user->isAdmin()) {

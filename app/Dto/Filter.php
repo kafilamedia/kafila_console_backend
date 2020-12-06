@@ -9,4 +9,5 @@ class Filter
     public ?string $orderBy = null;
     public array $fieldsFilter = [];
     public bool $match = false;
+    public bool $withDetail = false;
 }
