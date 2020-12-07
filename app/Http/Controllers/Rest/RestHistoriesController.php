@@ -23,7 +23,8 @@ class RestHistoriesController extends BaseRestController
     public function statistic(Request $request) : JsonResponse
     {
         try {
-            $response = $this->recordHistoriesService->getDashboardStatisticData($request->user());
+            $payload = parent::getWebRequest($request);
+            $response = $this->recordHistoriesService->getDashboardStatisticData($payload, $request->user());
             return parent::jsonResponse($response);
         } catch (Throwable $th) {
             return parent::errorResponse($th);
