@@ -39,6 +39,9 @@ class RecordHistoriesService {
         $topic_count = $query->count();
         $statistic = new Statistic();
         $statistic->departement_id = $departement_id;
+        if ($user->isAdmin()) {
+            $statistic->departements = Departement::all()->toArray();
+        }
         if (0 == $topic_count) {
             $response->statistic = $statistic;
             return $response;
@@ -50,9 +53,7 @@ class RecordHistoriesService {
         $statistic->topic_not_closed_count = ($topic_count- $closed_count);
         $statistic->topic_count = $topic_count;
 
-        if ($user->isAdmin()) {
-            $statistic->departements = Departement::all()->toArray();
-        }
+       
 
         $response->statistic = $statistic;
         return $response;
