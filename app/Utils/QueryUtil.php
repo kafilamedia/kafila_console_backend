@@ -12,6 +12,9 @@ use Illuminate\Support\Arr;
 use ReflectionClass;
 use Throwable;
 
+define('JOIN_PREFIX', 'MAPPED_LEFT_JOIN_');
+define('JOIN_SUFFIX', '_LEFT_JOIN_KEY_END_');
+
 class QueryUtil
 {
     public static function rowMappedList(Collection $collection, $obj) : array
@@ -33,9 +36,9 @@ class QueryUtil
         $rowData = get_object_vars($rowDataRaw);
         $leftJoins = [];
         foreach ($rowData as $key => $value) {
-            if (Str::contains($key, 'MAPPED_LEFT_JOIN_') && Str::contains($key, '_LEFT_JOIN_KEY_END_')) {
-                $arr1 = explode('MAPPED_LEFT_JOIN_', $key);
-                $arr2 = explode('_LEFT_JOIN_KEY_END_', $arr1[1]);
+            if (Str::contains($key, JOIN_PREFIX) && Str::contains($key, JOIN_SUFFIX)) {
+                $arr1 = explode(JOIN_PREFIX, $key);
+                $arr2 = explode(JOIN_SUFFIX, $arr1[1]);
                 $table_name = $arr2[0];
                 $table_key = $arr2[1];
                 if (!Arr::has($leftJoins, $table_name) || is_null($leftJoins[$table_name])) {
@@ -116,7 +119,7 @@ class QueryUtil
                 if (is_null($join_alias)) {
                     $join_alias = $table_name;
                 }
-                $join_key = 'MAPPED_LEFT_JOIN_'.$join_alias.'_LEFT_JOIN_KEY_END_';
+                $join_key = JOIN_PREFIX.$join_alias.JOIN_SUFFIX;
                 array_push($select_fields, $table_name.'.'.$key.' as '.$join_key.$key);
             }
         }

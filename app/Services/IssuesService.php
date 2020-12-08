@@ -11,6 +11,9 @@ use App\Models\MeetingNote;
 use App\Models\User;
 use Exception;
 
+define('ANONIM', "ANONIM");
+define('WEBSITE', "website");
+
 class IssuesService
 {
 
@@ -123,9 +126,9 @@ class IssuesService
     public function storePublicIssue(WebRequest $request) : WebResponse
     {
         $issue = $request->issue;
-        $issue->issue_input = "Website";
-        if (null == $issue->email || "" == $issue->email) {
-            $issue->email = "ANONIM";
+        $issue->issue_input = WEBSITE;
+        if (is_null($issue->email) || "" == $issue->email) {
+            $issue->email = ANONIM;
         }
         $issue->save();
         $response = new WebResponse();

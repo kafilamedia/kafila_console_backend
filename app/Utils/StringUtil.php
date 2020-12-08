@@ -24,7 +24,7 @@ class StringUtil
     public static function strContainsSome(string $string, string ...$words)
     {
         for ($i=0; $i < sizeof($words); $i++) {
-            if(Str::contains($string, $words[$i])){
+            if (Str::contains($string, $words[$i])) {
                 return true;
             }
         }
@@ -34,11 +34,9 @@ class StringUtil
     public static function getWordsAfterLastChar(string $word, string $char)
     {
         $res = "";
-        for ($i = 0;$i < strlen($word);$i++)
-        {
+        for ($i = 0; $i < strlen($word); $i++) {
             $res .= $word[$i];
-            if ($word[$i] == "\\")
-            {
+            if ($word[$i] == "\\") {
                 $res = "";
             }
         }
@@ -55,19 +53,14 @@ class StringUtil
 
         $result = "";
 
-        for ($i = 0;$i < strlen($camelCased);$i++)
-        {
+        for ($i = 0; $i < strlen($camelCased); $i++) {
             $char = $camelCased[$i];
-            if (StringUtil::isUpperCase($char))
-            {
+            if (StringUtil::isUpperCase($char)) {
                 $result .= (" ");
             }
-            if (0 == $i)
-            {
+            if (0 == $i) {
                 $result .= strtoupper($char);
-            }
-            else
-            {
+            } else {
                 $result .= ($char);
             }
 

@@ -17,14 +17,19 @@ class RecordHistoriesService {
 
     public function getDashboardStatisticData(WebRequest $request, User $user) :WebResponse
     {
-        
-        $discussion_topic_status = $this->getTopicDiscussionStatus($request, $user);
-
         $statistic = new Statistic();
-        $statistic->departement_id = $discussion_topic_status['departement_id'];
-        $statistic->topic_closed_count = $discussion_topic_status['closed_count'];
-        $statistic->topic_not_closed_count = ($discussion_topic_status['count']- $discussion_topic_status['closed_count']);
-        $statistic->topic_count = $discussion_topic_status['count'];
+
+        $topic_status = $this->getDiscussionTopicStatus($request, $user);
+        $statistic->departement_id = $topic_status['departement_id'];
+        $statistic->topic_closed_count = $topic_status['closed_count'];
+        $statistic->topic_not_closed_count = ($topic_status['count']- $topic_status['closed_count']);
+        $statistic->topic_count = $topic_status['count'];
+        
+        $issue_status = $this->getIssueStatus($request, $user);
+        $statistic->issue_closed_count = $issue_status['closed_count'];
+        $statistic->issue_not_closed_count = ($issue_status['count']- $issue_status['closed_count']);
+        $statistic->issue_count = $issue_status['count'];
+
         if ($user->isAdmin()) {
             $statistic->departements = Departement::all()->toArray();
         }
@@ -34,7 +39,7 @@ class RecordHistoriesService {
         return $response;
     }
 
-    public function getTopicDiscussionStatus(WebRequest $request, User $user) : array
+    public function getDiscussionTopicStatus(WebRequest $request, User $user) : array
     {
         $query =  DB::table('discussion_topics');
 
@@ -53,8 +58,32 @@ class RecordHistoriesService {
             $queryActions->where('discussion_topics.departement_id', $departement_id);
         }
 
-        $topic_count = $query->count();
+        $count = $query->count();
         $closed_count = $queryActions->count();
-        return ['count'=>$topic_count, 'closed_count' => $closed_count, 'departement_id' => $departement_id];
+        return ['count'=>$count, 'closed_count' => $closed_count, 'departement_id' => $departement_id];
+    }
+
+    public function getIssueStatus(WebRequest $request, User $user) : array
+    {
+        $query =  DB::table('issues');
+
+        $queryActions =  DB::table('followed_up_issues')
+        ->leftJoin('issues', 'issues.id', '=', 'followed_up_issues.issue_id');
+
+        $departement_id = "all";
+        if (!$user->isAdmin()) {
+            $departement_id = $user->departement_id;
+        } elseif ($user->isAdmin() && !is_null($request->filter) && isset($request->filter->fieldsFilter['departement_id'])) {
+            $departement_id = $request->filter->fieldsFilter['departement_id'];
+        }
+
+        if ($departement_id != "all") {
+            $query->where('issues.departement_id', $departement_id);
+            $queryActions->where('issues.departement_id', $departement_id);
+        }
+
+        $count = $query->count();
+        $closed_count = $queryActions->count();
+        return ['count'=>$count, 'closed_count' => $closed_count, 'departement_id' => $departement_id];
     }
 }
