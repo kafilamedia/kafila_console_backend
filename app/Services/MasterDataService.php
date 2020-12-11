@@ -9,6 +9,7 @@ use App\Models\DiscussionTopic;
 use App\Models\Issue;
 use App\Models\MeetingNote;
 use App\Models\User;
+use App\Utils\FileUtil;
 use App\Utils\ObjectUtil;
 use App\Utils\QueryUtil;
 use Exception;
@@ -293,7 +294,16 @@ class MasterDataService
             $model->date = $requesModel->date;
             $model->issuer = $requesModel->issuer;
             $model->issue_input = $requesModel->issue_input;
-            $model->email = $requesModel->email;
+            if (is_null($model->email) || "" == $model->email) {
+                $model->email = 'ANONIM';
+            }
+            if (isset($requesModel->attachment_info) && !is_null($requesModel->attachment_info)) {
+                //calculate file
+                $attachment_info = $requesModel->attachment_info;
+                $name = FileUtil::writeBase64File($attachment_info->data, 'issue');
+                $model->attachment = $name;
+                // $model->removeAttribute('attachment_info');
+            }
         }
         //
         $model->content = $requesModel->content;
