@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Dto\FileInfo;
+
 class DiscussionTopic extends BaseModel
 {
     //
@@ -10,7 +12,7 @@ class DiscussionTopic extends BaseModel
         'deadline_date',
         'person_in_charge',
         'user_id','departement_id',
-        'note_id'
+        'note_id','attachment'
     ];
 
     protected int $id;
@@ -22,12 +24,15 @@ class DiscussionTopic extends BaseModel
     protected int $note_id;
     protected int $departement_id;
     protected string $person_in_charge;
+    protected string $attachment;
 
+  
+
+    //not column
     protected User $user;
     protected Departement $departement;
     protected MeetingNote $meeting_note;
-
-    //not column
+    protected ?FileInfo $attachment_info;
     protected ?DiscussionAction $action = null;
     protected ?bool $is_closed;
     protected $closed_date;

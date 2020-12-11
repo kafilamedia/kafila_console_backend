@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Dto\FileInfo;
+
 class Issue extends BaseModel
 {
     //
     protected $fillable = [
-        'date', 'content', 'place', 'email', 'issuer', 'issue_input', 'departement_id'
+        'date', 'content', 'place', 'email', 'issuer', 'issue_input', 'departement_id', 'attachment'
     ];
 
     protected int $id;
@@ -16,13 +18,16 @@ class Issue extends BaseModel
     protected string $issuer;
     protected string $issue_input;
     protected string $place;
+    protected string $attachment;
     protected int $departement_id;
-    protected Departement $departement;
 
     //not column
+    
+    protected Departement $departement;
     protected ?FollowedUpIssue $follow_up = null;
     protected ?bool $is_closed;
     protected $closed_date;
+    protected ?FileInfo $attachment_info;
 
     public function __construct()
     {

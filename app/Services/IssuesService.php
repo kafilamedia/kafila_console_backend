@@ -9,6 +9,7 @@ use App\Models\Issue;
 use App\Models\MeetingAction;
 use App\Models\MeetingNote;
 use App\Models\User;
+use App\Utils\FileUtil;
 use Exception;
 
 define('ANONIM', "ANONIM");
@@ -130,7 +131,16 @@ class IssuesService
         if (is_null($issue->email) || "" == $issue->email) {
             $issue->email = ANONIM;
         }
-        $issue->save();
+        if (isset($issue->attachment_info) && !is_null($issue->attachment_info)) {
+            //calculate file
+            $attachment_info = $issue->attachment_info;
+            $name = FileUtil::writeBase64File($attachment_info->data, 'issue');
+            $issue->attachment = $name;
+            $issue->removeAttribute('attachment_info');
+            $issue->save();
+        } else {
+            $issue->save();
+        }
         $response = new WebResponse();
         $response->issue = $issue;
         return $response;

@@ -26,7 +26,10 @@ class BaseModel extends Model
     {
         array_push($this->ignorable_fields, $key);
     }
-
+    public function removeAttribute(string $key)
+    {
+        unset($this->attributes[$key]);
+    }
     /**
      * Get the value of filterable
      */ 
