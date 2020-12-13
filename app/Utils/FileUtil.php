@@ -4,11 +4,11 @@ namespace App\Utils;
 
 class FileUtil
 {
-
+    private static int $counter = 1;
     public static function writeBase64File(string $base64_string, string $code, $name = null) : string
     {
         if (is_null($name)) {
-            $name = $code.'_'.now()->getTimestamp();
+            $name = $code.'_'.FileUtil::$counter.now()->getTimestamp();
         }
         // split the string on commas
         // $data[ 0 ] == "data:image/png;base64"
@@ -20,7 +20,7 @@ class FileUtil
         $extensionRaw = explode('/', $data[0]);
         $extension = explode(';', $extensionRaw[1]);
 
-        $directory = public_path(). '\\upload\\'.$code.'\\';
+        $directory = base_path('public'). '/upload/'.$code.'/';
         $dir_exist = file_exists($directory);
         if (!$dir_exist) {
             mkdir($directory);
@@ -34,7 +34,7 @@ class FileUtil
     
         // clean up the file resource
         fclose($ifp);
-       
+        FileUtil::$counter++;
         return $name . ".". $extension[0];
     }
 }

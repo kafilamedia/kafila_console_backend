@@ -228,6 +228,13 @@ class MasterDataService
             $model->departement_id = $meeting_note->departement_id;
             $model->note_id = $requesModel->note_id;
             $model->person_in_charge = $requesModel->person_in_charge;
+            if (isset($requesModel->attachment_info) && !is_null($requesModel->attachment_info)) {
+                //calculate file
+                $attachment_info = $requesModel->attachment_info;
+                $name = FileUtil::writeBase64File($attachment_info->data, 'topic');
+                $model->attachment = $name;
+                $model->removeAttribute('attachment_info');
+            }
         }
         //
         $model->content = $requesModel->content;
