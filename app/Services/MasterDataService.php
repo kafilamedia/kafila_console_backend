@@ -301,8 +301,10 @@ class MasterDataService
             $model->date = $requesModel->date;
             $model->issuer = $requesModel->issuer;
             $model->issue_input = $requesModel->issue_input;
-            if (is_null($model->email) || "" == $model->email) {
+            if (is_null($requesModel->email) || "" == $requesModel->email) {
                 $model->email = 'ANONIM';
+            } else {
+                $model->email = $requesModel->email;
             }
             if (isset($requesModel->attachment_info) && !is_null($requesModel->attachment_info)) {
                 //calculate file
